@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.MediaTracker;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -17,8 +18,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -56,12 +55,15 @@ public class IconWell extends JComponent {
 		return image;
 	}
 	
-	public void setImage(BufferedImage image) {
+	public void setImage(Image image) {
 		if (image == null) {
 			for (int i = 0; i < numTypes; i++) icns.remove(type[i]);
 			this.image = null;
 		} else {
-			for (int i = 0; i < numTypes; i++) icns.putImage(type[i], image);
+			for (int i = 0; i < numTypes; i++) {
+				BufferedImage bi = loadImage(image, width[i], height[i]);
+				if (bi != null) icns.putImage(type[i], bi);
+			}
 			this.image = icns.getImage(type[0]);
 		}
 		for (IconWellListener l : listeners) l.iconChanged(this);
@@ -145,20 +147,17 @@ public class IconWell extends JComponent {
 					if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 						Image image = (Image)t.getTransferData(DataFlavor.imageFlavor);
 						if (image != null) {
-							BufferedImage bi = toBufferedImage(image);
-							if (bi != null) {
-								setImage(resizeImage(bi, width[0], height[0]));
-								e.dropComplete(true);
-								return;
-							}
+							setImage(image);
+							e.dropComplete(true);
+							return;
 						}
 					}
 					if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
 						List<?> list = (List<?>)t.getTransferData(DataFlavor.javaFileListFlavor);
 						if (list != null && list.size() == 1) {
-							BufferedImage bi = ImageIO.read((File)list.get(0));
-							if (bi != null) {
-								setImage(resizeImage(bi, width[0], height[0]));
+							BufferedImage image = ImageIO.read((File)list.get(0));
+							if (image != null) {
+								setImage(image);
 								e.dropComplete(true);
 								return;
 							}
@@ -170,38 +169,34 @@ public class IconWell extends JComponent {
 		});
 	}
 	
-	private static BufferedImage toBufferedImage(Image image) {
-		if (image instanceof BufferedImage) return (BufferedImage)image;
-		System.out.println("converting");
-		long start = System.currentTimeMillis();
-		int w = image.getWidth(null);
-		int h = image.getHeight(null);
-		while (w < 0 || h < 0) {
-			if (System.currentTimeMillis() - start > 1000) return null;
-			w = image.getWidth(null);
-			h = image.getHeight(null);
+	private BufferedImage loadImage(Image image, int width, int height) {
+		if (image instanceof BufferedImage) {
+			BufferedImage bi = (BufferedImage)image;
+			int w = bi.getWidth(), h = bi.getHeight();
+			if (w == width && h == height) return bi;
+		} else {
+			MediaTracker mt = new MediaTracker(this);
+			mt.addImage(image, 0);
+			try { mt.waitForID(0); }
+			catch (InterruptedException e) { return null; }
+			int w = image.getWidth(null), h = image.getHeight(null);
+			if (w == width && h == height) {
+				BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g = bi.createGraphics();
+				g.drawImage(image, 0, 0, null);
+				g.dispose();
+				return bi;
+			}
 		}
-		for (;;) {
-			BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = bi.createGraphics();
-			boolean ok = g.drawImage(image, 0, 0, null);
-			g.dispose();
-			if (ok) return bi;
-			if (System.currentTimeMillis() - start > 1000) return null;
-		}
-	}
-	
-	private static BufferedImage resizeImage(BufferedImage image, int width, int height) {
-		if (image.getWidth() == width && image.getHeight() == height) return image;
-		System.out.println("resizing");
-		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = resized.createGraphics();
-		double sx = (double)width / (double)image.getWidth();
-		double sy = (double)height / (double)image.getHeight();
-		AffineTransform tx = AffineTransform.getScaleInstance(sx, sy);
-		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BICUBIC);
-		g.drawImage(image, op, 0, 0);
+		image = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		MediaTracker mt = new MediaTracker(this);
+		mt.addImage(image, 0);
+		try { mt.waitForID(0); }
+		catch (InterruptedException e) { return null; }
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = bi.createGraphics();
+		g.drawImage(image, 0, 0, null);
 		g.dispose();
-		return resized;
+		return bi;
 	}
 }
