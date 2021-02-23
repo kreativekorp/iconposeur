@@ -40,8 +40,6 @@
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
 			<string>true</string>
-			<key>com.apple.mrj.application.apple.menu.about.name</key>
-			<string>Icon Poseur</string>
 		</dict>
 		<key>VMOptions</key>
 		<string>-Xmx1024M</string>
