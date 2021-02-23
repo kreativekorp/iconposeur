@@ -17,11 +17,11 @@ eclipseclean:
 
 bin: src
 	mkdir -p bin
-	javac -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin
+	javac -Xbootclasspath/p:dep/javaDesktopStub.jar -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin
 
 doc: src
 	mkdir -p doc
-	javadoc -classpath dep/orange-extensions.jar -sourcepath src $(PACKAGES) -d doc
+	javadoc -classpath dep/javaDesktopStub.jar:dep/orange-extensions.jar -sourcepath src $(PACKAGES) -d doc
 
 iconposeur.jar: bin
 	export COPYFILE_DISABLE=true

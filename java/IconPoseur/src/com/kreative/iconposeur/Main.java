@@ -41,15 +41,20 @@ public class Main {
 			}
 		}
 		
-		if (SwingUtils.IS_MAC_OS) {
-			try {
-				Class.forName("com.kreative.iconposeur.mac.NewApplicationListener").newInstance();
-			} catch (Exception e1) {
+		try {
+			Class.forName("com.kreative.iconposeur.mac.JavaApplicationListener").newInstance();
+		} catch (Exception e0) {
+			if (SwingUtils.IS_MAC_OS) {
 				try {
-					Class.forName("com.kreative.iconposeur.mac.MyApplicationListener").newInstance();
-				} catch (Exception e2) {
-					e2.printStackTrace();
-					e1.printStackTrace();
+					Class.forName("com.kreative.iconposeur.mac.NewApplicationListener").newInstance();
+				} catch (Exception e1) {
+					try {
+						Class.forName("com.kreative.iconposeur.mac.MyApplicationListener").newInstance();
+					} catch (Exception e2) {
+						e2.printStackTrace();
+						e1.printStackTrace();
+						e0.printStackTrace();
+					}
 				}
 			}
 		}
