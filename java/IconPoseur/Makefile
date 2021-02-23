@@ -17,11 +17,11 @@ eclipseclean:
 
 bin: src
 	mkdir -p bin
-	if ! javac -Xbootclasspath/p:dep/javaDesktopStub.jar -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin; then javac -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin; fi
+	javac -classpath dep/ual.jar -sourcepath src $(SRCFILES) -d bin
 
 doc: src
 	mkdir -p doc
-	javadoc -classpath dep/javaDesktopStub.jar:dep/orange-extensions.jar -sourcepath src $(PACKAGES) -d doc
+	javadoc -classpath dep/ual.jar -sourcepath src $(PACKAGES) -d doc
 
 iconposeur.jar: bin
 	export COPYFILE_DISABLE=true
@@ -36,7 +36,7 @@ Icon\ Poseur.app: dep iconposeur.jar
 	cp -f dep/Info.plist Icon\ Poseur.app/Contents
 	cp -f dep/universalJavaApplicationStub Icon\ Poseur.app/Contents/MacOS/Icon\ Poseur
 	cp -f dep/iconposeur.icns Icon\ Poseur.app/Contents/Resources
-	cp -f dep/jai-*.jar Icon\ Poseur.app/Contents/Resources/Java
+	cp -f dep/*.jar Icon\ Poseur.app/Contents/Resources/Java
 	cp -f iconposeur.jar Icon\ Poseur.app/Contents/Resources/Java
 
 install: iconposeur.jar
