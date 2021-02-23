@@ -31,7 +31,7 @@
 	<key>JavaX</key>
 	<dict>
 		<key>ClassPath</key>
-		<string>$JAVAROOT/iconposeur.jar:$JAVAROOT/jai-imageio-core.jar:$JAVAROOT/jai-imageio-jpeg2000.jar</string>
+		<string>$JAVAROOT/iconposeur.jar:$JAVAROOT/ual.jar:$JAVAROOT/jai-imageio-core.jar:$JAVAROOT/jai-imageio-jpeg2000.jar</string>
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
