@@ -40,6 +40,11 @@ public class Main {
 				openIcon(new File(arg));
 			}
 		}
+		
+		if (SwingUtils.IS_MAC_OS) {
+			try { Class.forName("com.kreative.iconposeur.mac.MyApplicationListener").newInstance(); }
+			catch (Exception e) { e.printStackTrace(); }
+		}
 	}
 	
 	public static IcnsFrame newIcns() {

@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="dep/jai-imageio-core.jar"/>
 	<classpathentry kind="lib" path="dep/jai-imageio-jpeg2000.jar"/>
+	<classpathentry kind="lib" path="dep/orange-extensions.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>true</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>Icon Poseur</string>
+	<key>CFBundleGetInfoString</key>
+	<string>© 2021 Kreative Software</string>
+	<key>CFBundleIconFile</key>
+	<string>iconposeur.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.kreative.iconposeur</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Icon Poseur</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleSignature</key>
+	<string>icnP</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>JavaX</key>
+	<dict>
+		<key>ClassPath</key>
+		<string>$JAVAROOT/iconposeur.jar:$JAVAROOT/jai-imageio-core.jar:$JAVAROOT/jai-imageio-jpeg2000.jar</string>
+		<key>JVMVersion</key>
+		<string>1.5+</string>
+		<key>MainClass</key>
+		<string>com.kreative.iconposeur.Main</string>
+		<key>Properties</key>
+		<dict>
+			<key>apple.laf.useScreenMenuBar</key>
+			<string>true</string>
+			<key>com.apple.mrj.application.apple.menu.about.name</key>
+			<string>Icon Poseur</string>
+		</dict>
+		<key>VMOptions</key>
+		<string>-Xmx1024M</string>
+		<key>WorkingDirectory</key>
+		<string>$APP_PACKAGE/..</string>
+	</dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>icns</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Mac OS X icon</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>icns</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
+</dict>
+</plist>
