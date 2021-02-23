@@ -17,7 +17,7 @@ eclipseclean:
 
 bin: src
 	mkdir -p bin
-	javac -Xbootclasspath/p:dep/javaDesktopStub.jar -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin
+	if ! javac -Xbootclasspath/p:dep/javaDesktopStub.jar -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin; then javac -classpath dep/orange-extensions.jar -sourcepath src $(SRCFILES) -d bin; fi
 
 doc: src
 	mkdir -p doc
