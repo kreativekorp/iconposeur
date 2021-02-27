@@ -55,15 +55,37 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 	private void build() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		panel.add(createIconWell(1, MacIconSuite.ic09, 512, 512));
+		panel.add(createIconWell(
+			new MacIconWellModel.Type(MacIconSuite.ic09, 512, 512, true, true)
+		));
 		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(1, MacIconSuite.ic08, 256, 256));
+		panel.add(createIconWell(
+			new MacIconWellModel.Type(MacIconSuite.ic08, 256, 256, true, true)
+		));
 		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(2, MacIconSuite.it32, 128, 128, MacIconSuite.t8mk, 128, 128));
+		panel.add(createIconWell(
+			new MacIconWellModel.Type(MacIconSuite.it32, 128, 128, true, true),
+			new MacIconWellModel.Type(MacIconSuite.ict8, 128, 128, true, false),
+			new MacIconWellModel.Type(MacIconSuite.ict4, 128, 128, true, false),
+			new MacIconWellModel.Type(MacIconSuite.ict$, 128, 128, true, false),
+			new MacIconWellModel.Type(MacIconSuite.t8mk, 128, 128, false, true)
+		));
 		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(2, MacIconSuite.il32, 32, 32, MacIconSuite.l8mk, 32, 32));
+		panel.add(createIconWell(
+			new MacIconWellModel.Type(MacIconSuite.il32, 32, 32, true, true),
+			new MacIconWellModel.Type(MacIconSuite.icl8, 32, 32, true, false),
+			new MacIconWellModel.Type(MacIconSuite.icl4, 32, 32, true, false),
+			new MacIconWellModel.Type(MacIconSuite.ICN$, 32, 32, true, false),
+			new MacIconWellModel.Type(MacIconSuite.l8mk, 32, 32, false, true)
+		));
 		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(2, MacIconSuite.is32, 16, 16, MacIconSuite.s8mk, 16, 16));
+		panel.add(createIconWell(
+			new MacIconWellModel.Type(MacIconSuite.is32, 16, 16, true, true),
+			new MacIconWellModel.Type(MacIconSuite.ics8, 16, 16, true, false),
+			new MacIconWellModel.Type(MacIconSuite.ics4, 16, 16, true, false),
+			new MacIconWellModel.Type(MacIconSuite.ics$, 16, 16, true, false),
+			new MacIconWellModel.Type(MacIconSuite.s8mk, 16, 16, false, true)
+		));
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		setContentPane(panel);
 		setJMenuBar(new MainMenuBar(this, this));
@@ -75,8 +97,9 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 		addWindowListener(windowListener);
 	}
 	
-	private JPanel createIconWell(int numTypes, int... typesWidthsHeights) {
-		IconWell well = new IconWell(icns, numTypes, typesWidthsHeights);
+	private JPanel createIconWell(MacIconWellModel.Type... types) {
+		IconWellModel model = new MacIconWellModel(icns, types);
+		IconWell well = new IconWell(model);
 		well.addIconWellListener(iconWellListener);
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(well, BorderLayout.PAGE_START);

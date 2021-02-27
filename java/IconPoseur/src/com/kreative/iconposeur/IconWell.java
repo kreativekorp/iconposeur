@@ -3,10 +3,8 @@ package com.kreative.iconposeur;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.MediaTracker;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -14,6 +12,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -28,43 +28,28 @@ import javax.swing.JComponent;
 public class IconWell extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
-	private final List<IconWellListener> listeners = new ArrayList<IconWellListener>();
-	private final MacIconSuite icns;
-	private final int numTypes;
-	private final int[] type;
-	private final int[] width;
-	private final int[] height;
-	private BufferedImage image;
+	private final List<IconWellListener> listeners;
+	private final IconWellModel model;
+	private Image image;
 	
-	public IconWell(MacIconSuite icns, int numTypes, int... typesWidthsHeights) {
-		this.icns = icns;
-		this.numTypes = numTypes;
-		this.type = new int[numTypes];
-		this.width = new int[numTypes];
-		this.height = new int[numTypes];
-		for (int p = 0, i = 0; i < numTypes; i++) {
-			type[i] = typesWidthsHeights[p++];
-			width[i] = typesWidthsHeights[p++];
-			height[i] = typesWidthsHeights[p++];
-		}
-		this.image = icns.containsKey(type[0]) ? icns.getImage(type[0]) : null;
+	public IconWell(IconWellModel model) {
+		this.listeners = new ArrayList<IconWellListener>();
+		this.model = model;
+		this.image = model.getImage();
 		createListeners();
 	}
 	
-	public BufferedImage getImage() {
+	public Image getImage() {
 		return image;
 	}
 	
 	public void setImage(Image image) {
 		if (image == null) {
-			for (int i = 0; i < numTypes; i++) icns.remove(type[i]);
+			this.model.removeImage();
 			this.image = null;
 		} else {
-			for (int i = 0; i < numTypes; i++) {
-				BufferedImage bi = loadImage(image, width[i], height[i]);
-				if (bi != null) icns.putImage(type[i], bi);
-			}
-			this.image = icns.getImage(type[0]);
+			this.model.setImage(this, image);
+			this.image = model.getImage();
 		}
 		for (IconWellListener l : listeners) l.iconChanged(this);
 		repaint();
@@ -80,25 +65,28 @@ public class IconWell extends JComponent {
 	
 	@Override
 	public Dimension getMinimumSize() {
+		Dimension d = model.getImageSize();
 		Insets i = getInsets();
-		int w = width[0] + 8 + i.left + i.right;
-		int h = height[0] + 8 + i.top + i.bottom;
+		int w = d.width + 8 + i.left + i.right;
+		int h = d.height + 8 + i.top + i.bottom;
 		return new Dimension(w, h);
 	}
 	
 	@Override
 	public Dimension getPreferredSize() {
+		Dimension d = model.getImageSize();
 		Insets i = getInsets();
-		int w = width[0] + 8 + i.left + i.right;
-		int h = height[0] + 8 + i.top + i.bottom;
+		int w = d.width + 8 + i.left + i.right;
+		int h = d.height + 8 + i.top + i.bottom;
 		return new Dimension(w, h);
 	}
 	
 	@Override
 	public Dimension getMaximumSize() {
+		Dimension d = model.getImageSize();
 		Insets i = getInsets();
-		int w = width[0] + 8 + i.left + i.right;
-		int h = height[0] + 8 + i.top + i.bottom;
+		int w = d.width + 8 + i.left + i.right;
+		int h = d.height + 8 + i.top + i.bottom;
 		return new Dimension(w, h);
 	}
 	
@@ -107,14 +95,16 @@ public class IconWell extends JComponent {
 		Insets i = getInsets();
 		int w = getWidth() - i.left - i.right;
 		int h = getHeight() - i.top - i.bottom;
+		int t = isFocusOwner() ? 3 : 1;
 		g.setColor(Color.darkGray);
-		g.fillRect(i.left, i.top, w, 1);
-		g.fillRect(i.left, i.top, 1, h);
-		g.fillRect(i.left, i.top + h - 1, w, 1);
-		g.fillRect(i.left + w - 1, i.top, 1, h);
+		g.fillRect(i.left, i.top, w, t);
+		g.fillRect(i.left, i.top, t, h);
+		g.fillRect(i.left, i.top + h - t, w, t);
+		g.fillRect(i.left + w - t, i.top, t, h);
 		if (image != null) {
-			int ix = i.left + (w - width[0]) / 2;
-			int iy = i.top + (h - height[0]) / 2;
+			Dimension d = model.getImageSize();
+			int ix = i.left + (w - d.width) / 2;
+			int iy = i.top + (h - d.height) / 2;
 			g.drawImage(image, ix, iy, null);
 		}
 	}
@@ -122,6 +112,16 @@ public class IconWell extends JComponent {
 	private void createListeners() {
 		setFocusable(true);
 		setRequestFocusEnabled(true);
+		addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				repaint();
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				repaint();
+			}
+		});
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				requestFocusInWindow();
@@ -167,36 +167,5 @@ public class IconWell extends JComponent {
 				e.dropComplete(false);
 			}
 		});
-	}
-	
-	private BufferedImage loadImage(Image image, int width, int height) {
-		if (image instanceof BufferedImage) {
-			BufferedImage bi = (BufferedImage)image;
-			int w = bi.getWidth(), h = bi.getHeight();
-			if (w == width && h == height) return bi;
-		} else {
-			MediaTracker mt = new MediaTracker(this);
-			mt.addImage(image, 0);
-			try { mt.waitForID(0); }
-			catch (InterruptedException e) { return null; }
-			int w = image.getWidth(null), h = image.getHeight(null);
-			if (w == width && h == height) {
-				BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D g = bi.createGraphics();
-				g.drawImage(image, 0, 0, null);
-				g.dispose();
-				return bi;
-			}
-		}
-		image = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		MediaTracker mt = new MediaTracker(this);
-		mt.addImage(image, 0);
-		try { mt.waitForID(0); }
-		catch (InterruptedException e) { return null; }
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = bi.createGraphics();
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-		return bi;
 	}
 }
