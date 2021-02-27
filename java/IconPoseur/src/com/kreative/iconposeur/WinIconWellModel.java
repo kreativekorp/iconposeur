@@ -1,0 +1,88 @@
+package com.kreative.iconposeur;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+public class WinIconWellModel extends IconWellModel {
+	public static final class Size {
+		public final int width;
+		public final int height;
+		public final int bpp;
+		public final int[] colorTable;
+		public final boolean view;
+		public final boolean set;
+		public final boolean removeOnSet;
+		public final boolean remove;
+		public Size(int width, int height, int bpp, int[] colorTable, boolean view, boolean set, boolean removeOnSet, boolean remove) {
+			this.width = width;
+			this.height = height;
+			this.bpp = bpp;
+			this.colorTable = colorTable;
+			this.view = view;
+			this.set = set;
+			this.removeOnSet = removeOnSet;
+			this.remove = remove;
+		}
+	}
+	
+	private final WinIconDir ico;
+	private final Size[] sizes;
+	
+	public WinIconWellModel(WinIconDir ico, Size... sizes) {
+		this.ico = ico;
+		this.sizes = sizes;
+	}
+	
+	@Override
+	public Dimension getImageSize() {
+		return new Dimension(sizes[0].width, sizes[0].height);
+	}
+	
+	@Override
+	public Image getImage() {
+		for (Size size : sizes) {
+			if (size.view) {
+				WinIconDirEntry e = ico.get(size.width, size.height, size.bpp);
+				if (e != null) {
+					return e.getImage();
+				}
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public void setImage(Component parent, Image image) {
+		for (Size size : sizes) {
+			if (size.set) {
+				BufferedImage bi = loadImage(parent, image, size.width, size.height);
+				if (bi != null) try {
+					WinIconDirEntry e = new WinIconDirEntry(ico.isCursor());
+					if (size.bpp > 0) {
+						e.setBMPImage(bi, size.bpp, size.colorTable);
+					} else if (size.width < (-size.bpp) && size.height < (-size.bpp)) {
+						e.setBMPImage(bi, 32, size.colorTable);
+					} else {
+						e.setPNGImage(bi);
+					}
+					ico.add(e);
+					continue;
+				} catch (Exception e) {}
+			}
+			if (size.removeOnSet) {
+				ico.removeAll(ico.getAll(size.width, size.height, size.bpp));
+			}
+		}
+	}
+	
+	@Override
+	public void removeImage() {
+		for (Size size : sizes) {
+			if (size.remove) {
+				ico.removeAll(ico.getAll(size.width, size.height, size.bpp));
+			}
+		}
+	}
+}

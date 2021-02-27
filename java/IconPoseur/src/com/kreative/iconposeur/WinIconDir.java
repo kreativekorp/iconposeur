@@ -136,7 +136,7 @@ public class WinIconDir extends ArrayList<WinIconDirEntry> {
 		for (WinIconDirEntry e : this) {
 			int eWidth = e.getWidth();
 			int eHeight = e.getHeight();
-			int eBpp = e.getBitsPerPixel();
+			int eBpp = e.isPNG() ? 32 : e.getBitsPerPixel();
 			if (
 				(wantWidth <= 0 || eWidth == wantWidth) && (eWidth >= bestWidth) &&
 				(wantHeight <= 0 || eHeight == wantHeight) && (eHeight >= bestHeight) &&
@@ -154,10 +154,13 @@ public class WinIconDir extends ArrayList<WinIconDirEntry> {
 	public List<WinIconDirEntry> getAll(int wantWidth, int wantHeight, int wantBpp) {
 		List<WinIconDirEntry> matches = new ArrayList<WinIconDirEntry>();
 		for (WinIconDirEntry e : this) {
+			int eWidth = e.getWidth();
+			int eHeight = e.getHeight();
+			int eBpp = e.isPNG() ? 32 : e.getBitsPerPixel();
 			if (
-				(wantWidth <= 0 || e.getWidth() == wantWidth) &&
-				(wantHeight <= 0 || e.getHeight() == wantHeight) &&
-				(wantBpp <= 0 || e.getBitsPerPixel() == wantBpp)
+				(wantWidth <= 0 || eWidth == wantWidth) &&
+				(wantHeight <= 0 || eHeight == wantHeight) &&
+				(wantBpp <= 0 || eBpp == wantBpp)
 			) {
 				matches.add(e);
 			}

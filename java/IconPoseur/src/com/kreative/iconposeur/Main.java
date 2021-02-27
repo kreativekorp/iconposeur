@@ -51,6 +51,12 @@ public class Main {
 		return f;
 	}
 	
+	public static IcoFrame newIco() {
+		IcoFrame f = new IcoFrame();
+		f.setVisible(true);
+		return f;
+	}
+	
 	public static JFrame openIcon() {
 		FileDialog fd = new FileDialog(new Frame(), "Open", FileDialog.LOAD);
 		fd.setVisible(true);
@@ -65,9 +71,15 @@ public class Main {
 		if (file == null) {
 			return openIcon();
 		} else try {
-			IcnsFrame f = new IcnsFrame(file);
-			f.setVisible(true);
-			return f;
+			if (file.getName().toLowerCase().endsWith(".ico")) {
+				IcoFrame f = new IcoFrame(file);
+				f.setVisible(true);
+				return f;
+			} else {
+				IcnsFrame f = new IcnsFrame(file);
+				f.setVisible(true);
+				return f;
+			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(
 				null, "An error occurred while opening this file.",

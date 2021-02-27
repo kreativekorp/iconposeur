@@ -16,6 +16,7 @@ public class MainMenuBar extends JMenuBar {
 	public MainMenuBar(Window w, SaveInterface si) {
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(new NewIcnsMenuItem());
+		fileMenu.add(new NewIcoMenuItem());
 		fileMenu.add(new OpenMenuItem());
 		fileMenu.add(new CloseMenuItem(w));
 		fileMenu.addSeparator();
@@ -36,6 +37,19 @@ public class MainMenuBar extends JMenuBar {
 			addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					Main.newIcns();
+				}
+			});
+		}
+	}
+	
+	public static class NewIcoMenuItem extends JMenuItem {
+		private static final long serialVersionUID = 1L;
+		public NewIcoMenuItem() {
+			super("New .ico File");
+			setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, SwingUtils.SHORTCUT_KEY | KeyEvent.SHIFT_MASK));
+			addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.newIco();
 				}
 			});
 		}
