@@ -9,6 +9,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import com.kreative.iconposeur.datatransfer.ClearMenuItem;
+import com.kreative.iconposeur.datatransfer.CopyMenuItem;
+import com.kreative.iconposeur.datatransfer.CutMenuItem;
+import com.kreative.iconposeur.datatransfer.PasteMenuItem;
 
 public class MainMenuBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
@@ -27,6 +31,13 @@ public class MainMenuBar extends JMenuBar {
 			fileMenu.add(new ExitMenuItem());
 		}
 		add(fileMenu);
+		
+		JMenu editMenu = new JMenu("Edit");
+		editMenu.add(new CutMenuItem());
+		editMenu.add(new CopyMenuItem());
+		editMenu.add(new PasteMenuItem());
+		editMenu.add(new ClearMenuItem());
+		add(editMenu);
 	}
 	
 	public static class NewIcnsMenuItem extends JMenuItem {

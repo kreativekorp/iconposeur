@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -12,6 +14,7 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -23,7 +26,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.JComponent;
+import com.kreative.iconposeur.datatransfer.ImageSelection;
 
 public class IconWell extends JComponent {
 	private static final long serialVersionUID = 1L;
@@ -53,6 +59,34 @@ public class IconWell extends JComponent {
 		}
 		for (IconWellListener l : listeners) l.iconChanged(this);
 		repaint();
+	}
+	
+	public boolean cut() {
+		if (image == null) return false;
+		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		ImageSelection sel = new ImageSelection(image);
+		cb.setContents(sel, sel);
+		setImage(null);
+		return true;
+	}
+	
+	public boolean copy() {
+		if (image == null) return false;
+		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		ImageSelection sel = new ImageSelection(image);
+		cb.setContents(sel, sel);
+		return true;
+	}
+	
+	public boolean paste() {
+		try {
+			Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Image image = (Image)cb.getData(DataFlavor.imageFlavor);
+			setImage(image);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	public void addIconWellListener(IconWellListener listener) {
@@ -135,6 +169,25 @@ public class IconWell extends JComponent {
 				}
 			}
 		});
+		
+		ActionMap actions = getActionMap();
+		actions.put("Cut", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override public void actionPerformed(ActionEvent e) { cut(); }
+		});
+		actions.put("Copy", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override public void actionPerformed(ActionEvent e) { copy(); }
+		});
+		actions.put("Paste", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override public void actionPerformed(ActionEvent e) { paste(); }
+		});
+		actions.put("Clear", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override public void actionPerformed(ActionEvent e) { setImage(null); }
+		});
+		
 		new DropTarget(this, new DropTargetListener() {
 			public void dragEnter(DropTargetDragEvent e) {}
 			public void dragExit(DropTargetEvent e) {}
