@@ -36,11 +36,21 @@ public class IconWell extends JComponent {
 	
 	private final List<IconWellListener> listeners;
 	private final IconWellModel model;
+	private final boolean retina;
 	private Image image;
 	
 	public IconWell(IconWellModel model) {
 		this.listeners = new ArrayList<IconWellListener>();
 		this.model = model;
+		this.retina = false;
+		this.image = model.getImage();
+		createListeners();
+	}
+	
+	public IconWell(IconWellModel model, boolean retina) {
+		this.listeners = new ArrayList<IconWellListener>();
+		this.model = model;
+		this.retina = retina;
 		this.image = model.getImage();
 		createListeners();
 	}
@@ -101,8 +111,8 @@ public class IconWell extends JComponent {
 	public Dimension getMinimumSize() {
 		Dimension d = model.getImageSize();
 		Insets i = getInsets();
-		int w = d.width + 8 + i.left + i.right;
-		int h = d.height + 8 + i.top + i.bottom;
+		int w = (retina ? (d.width / 2) : d.width) + 8 + i.left + i.right;
+		int h = (retina ? (d.height / 2) : d.height) + 8 + i.top + i.bottom;
 		return new Dimension(w, h);
 	}
 	
@@ -110,8 +120,8 @@ public class IconWell extends JComponent {
 	public Dimension getPreferredSize() {
 		Dimension d = model.getImageSize();
 		Insets i = getInsets();
-		int w = d.width + 8 + i.left + i.right;
-		int h = d.height + 8 + i.top + i.bottom;
+		int w = (retina ? (d.width / 2) : d.width) + 8 + i.left + i.right;
+		int h = (retina ? (d.height / 2) : d.height) + 8 + i.top + i.bottom;
 		return new Dimension(w, h);
 	}
 	
@@ -119,8 +129,8 @@ public class IconWell extends JComponent {
 	public Dimension getMaximumSize() {
 		Dimension d = model.getImageSize();
 		Insets i = getInsets();
-		int w = d.width + 8 + i.left + i.right;
-		int h = d.height + 8 + i.top + i.bottom;
+		int w = (retina ? (d.width / 2) : d.width) + 8 + i.left + i.right;
+		int h = (retina ? (d.height / 2) : d.height) + 8 + i.top + i.bottom;
 		return new Dimension(w, h);
 	}
 	
@@ -137,9 +147,11 @@ public class IconWell extends JComponent {
 		g.fillRect(i.left + w - t, i.top, t, h);
 		if (image != null) {
 			Dimension d = model.getImageSize();
-			int ix = i.left + (w - d.width) / 2;
-			int iy = i.top + (h - d.height) / 2;
-			g.drawImage(image, ix, iy, null);
+			int iw = (retina ? (d.width / 2) : d.width);
+			int ih = (retina ? (d.height / 2) : d.height);
+			int ix = i.left + (w - iw) / 2;
+			int iy = i.top + (h - ih) / 2;
+			g.drawImage(image, ix, iy, iw, ih, null);
 		}
 	}
 	

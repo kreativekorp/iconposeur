@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -58,34 +59,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	}
 	
 	private void build() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		panel.add(createIconWell(
-			new WinIconWellModel.Size(256, 256, 0, new int[0], true, false, true, true),
-			new WinIconWellModel.Size(256, 256, 0, new int[0], false, true, false, false)
-		));
-		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(
-			new WinIconWellModel.Size(48, 48, 0, new int[0], true, false, true, true),
-			new WinIconWellModel.Size(48, 48, 32, new int[0], false, true, false, false)
-		));
-		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(
-			new WinIconWellModel.Size(32, 32, 0, new int[0], true, false, true, true),
-			new WinIconWellModel.Size(32, 32, 32, new int[0], false, true, false, false)
-		));
-		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(
-			new WinIconWellModel.Size(24, 24, 0, new int[0], true, false, true, true),
-			new WinIconWellModel.Size(24, 24, 32, new int[0], false, true, false, false)
-		));
-		panel.add(Box.createHorizontalStrut(16));
-		panel.add(createIconWell(
-			new WinIconWellModel.Size(16, 16, 0, new int[0], true, false, true, true),
-			new WinIconWellModel.Size(16, 16, 32, new int[0], false, true, false, false)
-		));
-		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		setContentPane(panel);
+		setContentPane(createStandardPanel());
 		setJMenuBar(new MainMenuBar(this, this));
 		pack();
 		setResizable(false);
@@ -95,12 +69,55 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		addWindowListener(windowListener);
 	}
 	
-	private JPanel createIconWell(WinIconWellModel.Size... sizes) {
+	private JPanel createStandardPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+		panel.add(createIconWell(
+			"256",
+			new WinIconWellModel.Size(256, 256, 0, new int[0], true, false, true, true),
+			new WinIconWellModel.Size(256, 256, 0, new int[0], false, true, false, false)
+		));
+		panel.add(Box.createHorizontalStrut(16));
+		panel.add(createIconWell(
+			"48",
+			new WinIconWellModel.Size(48, 48, 0, new int[0], true, false, true, true),
+			new WinIconWellModel.Size(48, 48, 32, new int[0], false, true, false, false)
+		));
+		panel.add(Box.createHorizontalStrut(16));
+		panel.add(createIconWell(
+			"32",
+			new WinIconWellModel.Size(32, 32, 0, new int[0], true, false, true, true),
+			new WinIconWellModel.Size(32, 32, 32, new int[0], false, true, false, false)
+		));
+		panel.add(Box.createHorizontalStrut(16));
+		panel.add(createIconWell(
+			"24",
+			new WinIconWellModel.Size(24, 24, 0, new int[0], true, false, true, true),
+			new WinIconWellModel.Size(24, 24, 32, new int[0], false, true, false, false)
+		));
+		panel.add(Box.createHorizontalStrut(16));
+		panel.add(createIconWell(
+			"16",
+			new WinIconWellModel.Size(16, 16, 0, new int[0], true, false, true, true),
+			new WinIconWellModel.Size(16, 16, 32, new int[0], false, true, false, false)
+		));
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		return panel;
+	}
+	
+	private JPanel createIconWell(String title, WinIconWellModel.Size... sizes) {
 		IconWellModel model = new WinIconWellModel(ico, sizes);
 		IconWell well = new IconWell(model);
 		well.addIconWellListener(iconWellListener);
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(well, BorderLayout.PAGE_START);
+		if (title != null) {
+			JLabel tl = new JLabel(title);
+			tl.setFont(tl.getFont().deriveFont(12f));
+			JPanel tp = new JPanel(new BorderLayout());
+			tp.add(tl, BorderLayout.PAGE_START);
+			panel.add(tp, BorderLayout.CENTER);
+		}
 		return panel;
 	}
 	

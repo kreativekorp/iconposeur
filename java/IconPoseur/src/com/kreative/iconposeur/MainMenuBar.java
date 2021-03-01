@@ -17,7 +17,7 @@ import com.kreative.iconposeur.datatransfer.PasteMenuItem;
 public class MainMenuBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 	
-	public MainMenuBar(Window w, SaveInterface si) {
+	public MainMenuBar(Window w, SaveInterface si, JMenu... menus) {
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(new NewIcnsMenuItem());
 		fileMenu.add(new NewIcoMenuItem());
@@ -38,6 +38,8 @@ public class MainMenuBar extends JMenuBar {
 		editMenu.add(new PasteMenuItem());
 		editMenu.add(new ClearMenuItem());
 		add(editMenu);
+		
+		for (JMenu menu : menus) add(menu);
 	}
 	
 	public static class NewIcnsMenuItem extends JMenuItem {
