@@ -128,39 +128,45 @@ public class WinIconDir extends ArrayList<WinIconDirEntry> {
 		return isCursor;
 	}
 	
-	public WinIconDirEntry get(int wantWidth, int wantHeight, int wantBpp) {
+	public WinIconDirEntry get(Integer wantWidth, Integer wantHeight, Integer wantBpp, Boolean wantPNG) {
 		WinIconDirEntry best = null;
 		int bestWidth = 0;
 		int bestHeight = 0;
 		int bestBpp = 0;
+		boolean bestIsPNG = false;
 		for (WinIconDirEntry e : this) {
 			int eWidth = e.getWidth();
 			int eHeight = e.getHeight();
-			int eBpp = e.isPNG() ? 32 : e.getBitsPerPixel();
+			int eBpp = e.getBitsPerPixel();
+			boolean eIsPNG = e.isPNG();
 			if (
-				(wantWidth <= 0 || eWidth == wantWidth) && (eWidth >= bestWidth) &&
-				(wantHeight <= 0 || eHeight == wantHeight) && (eHeight >= bestHeight) &&
-				(wantBpp <= 0 || eBpp == wantBpp) && (eBpp >= bestBpp)
+				(wantWidth == null || wantWidth.intValue() == eWidth) && (eWidth >= bestWidth) &&
+				(wantHeight == null || wantHeight.intValue() == eHeight) && (eHeight >= bestHeight) &&
+				(wantBpp == null || wantBpp.intValue() == eBpp) && (eBpp >= bestBpp) &&
+				(wantPNG == null || wantPNG.booleanValue() == eIsPNG) && (eIsPNG || !bestIsPNG)
 			) {
 				best = e;
 				bestWidth = eWidth;
 				bestHeight = eHeight;
 				bestBpp = eBpp;
+				bestIsPNG = eIsPNG;
 			}
 		}
 		return best;
 	}
 	
-	public List<WinIconDirEntry> getAll(int wantWidth, int wantHeight, int wantBpp) {
+	public List<WinIconDirEntry> getAll(Integer wantWidth, Integer wantHeight, Integer wantBpp, Boolean wantPNG) {
 		List<WinIconDirEntry> matches = new ArrayList<WinIconDirEntry>();
 		for (WinIconDirEntry e : this) {
 			int eWidth = e.getWidth();
 			int eHeight = e.getHeight();
-			int eBpp = e.isPNG() ? 32 : e.getBitsPerPixel();
+			int eBpp = e.getBitsPerPixel();
+			boolean eIsPNG = e.isPNG();
 			if (
-				(wantWidth <= 0 || eWidth == wantWidth) &&
-				(wantHeight <= 0 || eHeight == wantHeight) &&
-				(wantBpp <= 0 || eBpp == wantBpp)
+				(wantWidth == null || wantWidth.intValue() == eWidth) &&
+				(wantHeight == null || wantHeight.intValue() == eHeight) &&
+				(wantBpp == null || wantBpp.intValue() == eBpp) &&
+				(wantPNG == null || wantPNG.booleanValue() == eIsPNG)
 			) {
 				matches.add(e);
 			}

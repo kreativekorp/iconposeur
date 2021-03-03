@@ -7,18 +7,23 @@ import java.awt.image.BufferedImage;
 
 public class WinIconWellModel extends IconWellModel {
 	public static final class Size {
-		public final int width;
-		public final int height;
-		public final int bpp;
+		public final Integer width;
+		public final Integer height;
+		public final Integer bpp;
+		public final Boolean png;
 		public final int[] colorTable;
 		public final boolean view;
 		public final boolean set;
 		public final boolean removeOnSet;
 		public final boolean remove;
-		public Size(int width, int height, int bpp, int[] colorTable, boolean view, boolean set, boolean removeOnSet, boolean remove) {
+		public Size(
+			Integer width, Integer height, Integer bpp, Boolean png, int[] colorTable,
+			boolean view, boolean set, boolean removeOnSet, boolean remove
+		) {
 			this.width = width;
 			this.height = height;
 			this.bpp = bpp;
+			this.png = png;
 			this.colorTable = colorTable;
 			this.view = view;
 			this.set = set;
@@ -44,7 +49,7 @@ public class WinIconWellModel extends IconWellModel {
 	public Image getImage() {
 		for (Size size : sizes) {
 			if (size.view) {
-				WinIconDirEntry e = ico.get(size.width, size.height, size.bpp);
+				WinIconDirEntry e = ico.get(size.width, size.height, size.bpp, size.png);
 				if (e != null) {
 					return e.getImage();
 				}
@@ -56,23 +61,24 @@ public class WinIconWellModel extends IconWellModel {
 	@Override
 	public void setImage(Component parent, Image image) {
 		for (Size size : sizes) {
+			if (size.removeOnSet) {
+				ico.removeAll(ico.getAll(size.width, size.height, size.bpp, size.png));
+			}
 			if (size.set) {
 				BufferedImage bi = loadImage(parent, image, size.width, size.height);
-				if (bi != null) try {
-					WinIconDirEntry e = new WinIconDirEntry(ico.isCursor());
-					if (size.bpp > 0) {
-						e.setBMPImage(bi, size.bpp, size.colorTable);
-					} else if (size.width < (-size.bpp) && size.height < (-size.bpp)) {
-						e.setBMPImage(bi, 32, size.colorTable);
-					} else {
-						e.setPNGImage(bi);
+				if (bi != null) {
+					try {
+						WinIconDirEntry e = new WinIconDirEntry(ico.isCursor());
+						if (size.png) {
+							e.setPNGImage(bi);
+						} else {
+							e.setBMPImage(bi, size.bpp, size.colorTable);
+						}
+						ico.add(e);
+					} catch (Exception e) {
+						// Ignored.
 					}
-					ico.add(e);
-					continue;
-				} catch (Exception e) {}
-			}
-			if (size.removeOnSet) {
-				ico.removeAll(ico.getAll(size.width, size.height, size.bpp));
+				}
 			}
 		}
 	}
@@ -81,7 +87,7 @@ public class WinIconWellModel extends IconWellModel {
 	public void removeImage() {
 		for (Size size : sizes) {
 			if (size.remove) {
-				ico.removeAll(ico.getAll(size.width, size.height, size.bpp));
+				ico.removeAll(ico.getAll(size.width, size.height, size.bpp, size.png));
 			}
 		}
 	}
