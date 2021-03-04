@@ -245,37 +245,37 @@ public class IcoFrame extends JFrame implements SaveInterface {
 			panel8.setLayout(new BoxLayout(panel8, BoxLayout.LINE_AXIS));
 			panel8.add(createIconWell(
 				"128 (256 Colors)",
-				new WinIconWellModel.Size(128, 128, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(128, 128, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel8.add(Box.createHorizontalStrut(16));
 			panel8.add(createIconWell(
 				"96",
-				new WinIconWellModel.Size(96, 96, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(96, 96, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel8.add(Box.createHorizontalStrut(16));
 			panel8.add(createIconWell(
 				"64",
-				new WinIconWellModel.Size(64, 64, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(64, 64, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel8.add(Box.createHorizontalStrut(16));
 			panel8.add(createIconWell(
 				"48",
-				new WinIconWellModel.Size(48, 48, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(48, 48, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel8.add(Box.createHorizontalStrut(16));
 			panel8.add(createIconWell(
 				"32",
-				new WinIconWellModel.Size(32, 32, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(32, 32, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel8.add(Box.createHorizontalStrut(16));
 			panel8.add(createIconWell(
 				"24",
-				new WinIconWellModel.Size(24, 24, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(24, 24, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel8.add(Box.createHorizontalStrut(16));
 			panel8.add(createIconWell(
 				"16",
-				new WinIconWellModel.Size(16, 16, 8, false, ColorPalettes.createMacintosh8(), true, true, true, true)
+				new WinIconWellModel.Size(16, 16, 8, false, ColorPalettes.createWindows8(), true, true, true, true)
 			));
 			panel.add(panel8);
 		}
