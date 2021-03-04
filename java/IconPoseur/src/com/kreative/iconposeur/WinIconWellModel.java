@@ -91,4 +91,25 @@ public class WinIconWellModel extends IconWellModel {
 			}
 		}
 	}
+	
+	@Override
+	public boolean intersects(IconWellModel model) {
+		if (model instanceof WinIconWellModel) {
+			if (((WinIconWellModel)model).ico == this.ico) {
+				for (Size a : ((WinIconWellModel)model).sizes) {
+					for (Size b : this.sizes) {
+						if (
+							(a.width == null || b.width == null || a.width.equals(b.width)) &&
+							(a.height == null || b.height == null || a.height.equals(b.height)) &&
+							(a.bpp == null || b.bpp == null || a.bpp.equals(b.bpp)) &&
+							(a.png == null || b.png == null || a.png.equals(b.png))
+						) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

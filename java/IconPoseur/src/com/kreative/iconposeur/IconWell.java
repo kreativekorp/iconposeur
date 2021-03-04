@@ -55,8 +55,17 @@ public class IconWell extends JComponent {
 		createListeners();
 	}
 	
+	public IconWellModel getModel() {
+		return model;
+	}
+	
 	public Image getImage() {
 		return image;
+	}
+	
+	public void updateImage() {
+		image = model.getImage();
+		repaint();
 	}
 	
 	public void setImage(Image image) {

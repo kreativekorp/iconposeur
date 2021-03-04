@@ -12,6 +12,7 @@ public abstract class IconWellModel {
 	public abstract Image getImage();
 	public abstract void setImage(Component parent, Image image);
 	public abstract void removeImage();
+	public abstract boolean intersects(IconWellModel model);
 	
 	protected final BufferedImage loadImage(Component parent, Image image, int width, int height) {
 		if (image instanceof BufferedImage) {

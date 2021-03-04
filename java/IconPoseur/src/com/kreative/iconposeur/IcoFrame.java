@@ -28,11 +28,19 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	private static final long serialVersionUID = 1L;
 	
 	private final WinIconDir ico;
+	private final IconWellGroup wells;
+	private final JPanel standardPanel;
+	private final JPanel advancedPanel;
+	private final JMenu viewMenu;
 	private File file;
 	private boolean changed;
 	
 	public IcoFrame() {
 		this.ico = new WinIconDir();
+		this.wells = new IconWellGroup();
+		this.standardPanel = createStandardPanel();
+		this.advancedPanel = createAdvancedPanel();
+		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
 		build();
@@ -40,6 +48,10 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	
 	public IcoFrame(boolean cursor) {
 		this.ico = new WinIconDir(cursor);
+		this.wells = new IconWellGroup();
+		this.standardPanel = createStandardPanel();
+		this.advancedPanel = createAdvancedPanel();
+		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
 		build();
@@ -50,6 +62,10 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		ico.read(in);
 		in.close();
+		this.wells = new IconWellGroup();
+		this.standardPanel = createStandardPanel();
+		this.advancedPanel = createAdvancedPanel();
+		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
 		build();
@@ -60,14 +76,18 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		FileInputStream in = new FileInputStream(file);
 		ico.read(in);
 		in.close();
+		this.wells = new IconWellGroup();
+		this.standardPanel = createStandardPanel();
+		this.advancedPanel = createAdvancedPanel();
+		this.viewMenu = createViewMenu();
 		this.file = file;
 		this.changed = false;
 		build();
 	}
 	
 	private void build() {
-		setContentPane(createStandardPanel());
-		setJMenuBar(new MainMenuBar(this, this, createViewMenu()));
+		setContentPane(standardPanel);
+		setJMenuBar(new MainMenuBar(this, this, viewMenu));
 		pack();
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -84,7 +104,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		standard.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setContentPane(createStandardPanel());
+				setContentPane(standardPanel);
 				pack();
 			}
 		});
@@ -95,7 +115,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		advanced.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setContentPane(createAdvancedPanel());
+				setContentPane(advancedPanel);
 				pack();
 			}
 		});
@@ -384,6 +404,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		IconWellModel model = new WinIconWellModel(ico, sizes);
 		IconWell well = new IconWell(model);
 		well.addIconWellListener(iconWellListener);
+		wells.add(well);
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(well, BorderLayout.PAGE_START);
 		if (title != null) {

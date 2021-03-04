@@ -12,12 +12,19 @@ public class MacIconWellModel extends IconWellModel {
 		public final int height;
 		public final boolean view;
 		public final boolean set;
-		public Type(int type, int width, int height, boolean view, boolean set) {
+		public final boolean removeOnSet;
+		public final boolean remove;
+		public Type(
+			int type, int width, int height,
+			boolean view, boolean set, boolean removeOnSet, boolean remove
+		) {
 			this.type = type;
 			this.width = width;
 			this.height = height;
 			this.view = view;
 			this.set = set;
+			this.removeOnSet = removeOnSet;
+			this.remove = remove;
 		}
 	}
 	
@@ -54,14 +61,34 @@ public class MacIconWellModel extends IconWellModel {
 					continue;
 				}
 			}
-			icns.remove(type.type);
+			if (type.removeOnSet) {
+				icns.remove(type.type);
+			}
 		}
 	}
 	
 	@Override
 	public void removeImage() {
 		for (Type type : types) {
-			icns.remove(type.type);
+			if (type.remove) {
+				icns.remove(type.type);
+			}
 		}
+	}
+	
+	@Override
+	public boolean intersects(IconWellModel model) {
+		if (model instanceof MacIconWellModel) {
+			if (((MacIconWellModel)model).icns == this.icns) {
+				for (Type a : ((MacIconWellModel)model).types) {
+					for (Type b : this.types) {
+						if (a.type == b.type) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
