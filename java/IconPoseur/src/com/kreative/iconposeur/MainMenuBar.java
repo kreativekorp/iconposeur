@@ -39,7 +39,16 @@ public class MainMenuBar extends JMenuBar {
 		editMenu.add(new ClearMenuItem());
 		add(editMenu);
 		
-		for (JMenu menu : menus) add(menu);
+		for (JMenu menu : menus) {
+			if (menu.getText().equals("Edit")) {
+				editMenu.addSeparator();
+				for (int i = 0, n = menu.getItemCount(); i < n; i++) {
+					editMenu.add(menu.getItem(i));
+				}
+			} else {
+				add(menu);
+			}
+		}
 	}
 	
 	public static class NewIcnsMenuItem extends JMenuItem {

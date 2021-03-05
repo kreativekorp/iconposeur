@@ -19,6 +19,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
@@ -36,6 +37,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	private final IconWellGroup wells;
 	private final JPanel standardPanel;
 	private final JPanel advancedPanel;
+	private final JMenu editMenu;
 	private final JMenu viewMenu;
 	private File file;
 	private boolean changed;
@@ -45,6 +47,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		this.wells = new IconWellGroup();
 		this.standardPanel = createStandardPanel();
 		this.advancedPanel = createAdvancedPanel();
+		this.editMenu = createEditMenu();
 		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
@@ -56,6 +59,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		this.wells = new IconWellGroup();
 		this.standardPanel = createStandardPanel();
 		this.advancedPanel = createAdvancedPanel();
+		this.editMenu = createEditMenu();
 		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
@@ -70,6 +74,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		this.wells = new IconWellGroup();
 		this.standardPanel = createStandardPanel();
 		this.advancedPanel = createAdvancedPanel();
+		this.editMenu = createEditMenu();
 		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
@@ -84,6 +89,7 @@ public class IcoFrame extends JFrame implements SaveInterface {
 		this.wells = new IconWellGroup();
 		this.standardPanel = createStandardPanel();
 		this.advancedPanel = createAdvancedPanel();
+		this.editMenu = createEditMenu();
 		this.viewMenu = createViewMenu();
 		this.file = file;
 		this.changed = false;
@@ -91,13 +97,27 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	}
 	
 	private void build() {
-		setJMenuBar(new MainMenuBar(this, this, viewMenu));
+		setJMenuBar(new MainMenuBar(this, this, editMenu, viewMenu));
 		((ViewMenuItem)viewMenu.getItem(0)).actionPerformed(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		updateWindow();
 		addWindowListener(windowListener);
+	}
+	
+	private JMenu createEditMenu() {
+		JMenu editMenu = new JMenu("Edit");
+		JMenuItem ctmi = new JMenuItem("Color Table...");
+		ctmi.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int[] ct = new ColorTableDialog(IcoFrame.this, 16, 16, getColorTable()).showDialog();
+				if (ct != null) setColorTable(ct);
+			}
+		});
+		editMenu.add(ctmi);
+		return editMenu;
 	}
 	
 	private JMenu createViewMenu() {
@@ -418,6 +438,16 @@ public class IcoFrame extends JFrame implements SaveInterface {
 			panel.add(tp, BorderLayout.CENTER);
 		}
 		return panel;
+	}
+	
+	public int[] getColorTable() {
+		int[] colorTable = new int[256];
+		for (int i = 0; i < 256; i++) colorTable[i] = palette8[i];
+		return colorTable;
+	}
+	
+	public void setColorTable(int[] colorTable) {
+		for (int i = 0; i < 256; i++) palette8[i] = colorTable[i];
 	}
 	
 	@Override
