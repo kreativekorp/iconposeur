@@ -19,9 +19,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 public class IcoFrame extends JFrame implements SaveInterface {
@@ -91,9 +91,8 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	}
 	
 	private void build() {
-		setContentPane(standardPanel);
 		setJMenuBar(new MainMenuBar(this, this, viewMenu));
-		pack();
+		((ViewMenuItem)viewMenu.getItem(0)).actionPerformed(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -103,30 +102,29 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	
 	private JMenu createViewMenu() {
 		JMenu viewMenu = new JMenu("View");
-		
-		JMenuItem standard = new JMenuItem("Standard");
-		standard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, SwingUtils.SHORTCUT_KEY));
-		standard.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setContentPane(standardPanel);
-				pack();
-			}
-		});
-		viewMenu.add(standard);
-		
-		JMenuItem advanced = new JMenuItem("Advanced");
-		advanced.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, SwingUtils.SHORTCUT_KEY));
-		advanced.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setContentPane(advancedPanel);
-				pack();
-			}
-		});
-		viewMenu.add(advanced);
-		
+		viewMenu.add(new ViewMenuItem("Standard", KeyEvent.VK_1, standardPanel));
+		viewMenu.add(new ViewMenuItem("Advanced", KeyEvent.VK_2, advancedPanel));
 		return viewMenu;
+	}
+	
+	private class ViewMenuItem extends JRadioButtonMenuItem implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private final JPanel panel;
+		private ViewMenuItem(String name, int key, JPanel panel) {
+			super(name);
+			this.setAccelerator(KeyStroke.getKeyStroke(key, SwingUtils.SHORTCUT_KEY));
+			this.panel = panel;
+			this.addActionListener(this);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (int i = 0, n = viewMenu.getItemCount(); i < n; i++) {
+				ViewMenuItem vmi = (ViewMenuItem)viewMenu.getItem(i);
+				vmi.setSelected(vmi.panel == this.panel);
+			}
+			setContentPane(this.panel);
+			pack();
+		}
 	}
 	
 	private JPanel createStandardPanel() {

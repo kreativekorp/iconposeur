@@ -21,9 +21,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 public class IcnsFrame extends JFrame implements SaveInterface {
@@ -85,9 +85,8 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 	}
 	
 	private void build() {
-		setContentPane(standardPanel);
 		setJMenuBar(new MainMenuBar(this, this, viewMenu));
-		pack();
+		((ViewMenuItem)viewMenu.getItem(0)).actionPerformed(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -97,52 +96,31 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 	
 	private JMenu createViewMenu() {
 		JMenu viewMenu = new JMenu("View");
-		
-		JMenuItem standard = new JMenuItem("Standard");
-		standard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, SwingUtils.SHORTCUT_KEY));
-		standard.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setContentPane(standardPanel);
-				pack();
-			}
-		});
-		viewMenu.add(standard);
-		
-		JMenuItem retina = new JMenuItem("Retina");
-		retina.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, SwingUtils.SHORTCUT_KEY));
-		retina.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setContentPane(retinaPanel);
-				pack();
-			}
-		});
-		viewMenu.add(retina);
-		
-		JMenuItem classic = new JMenuItem("Classic");
-		classic.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, SwingUtils.SHORTCUT_KEY));
-		classic.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setContentPane(classicPanel);
-				pack();
-			}
-		});
-		viewMenu.add(classic);
-		
-		JMenuItem compressed = new JMenuItem("Compressed");
-		compressed.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4, SwingUtils.SHORTCUT_KEY));
-		compressed.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setContentPane(compressedPanel);
-				pack();
-			}
-		});
-		viewMenu.add(compressed);
-		
+		viewMenu.add(new ViewMenuItem("Standard", KeyEvent.VK_1, standardPanel));
+		viewMenu.add(new ViewMenuItem("Retina", KeyEvent.VK_2, retinaPanel));
+		viewMenu.add(new ViewMenuItem("Classic", KeyEvent.VK_3, classicPanel));
+		viewMenu.add(new ViewMenuItem("Compressed", KeyEvent.VK_4, compressedPanel));
 		return viewMenu;
+	}
+	
+	private class ViewMenuItem extends JRadioButtonMenuItem implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private final JPanel panel;
+		private ViewMenuItem(String name, int key, JPanel panel) {
+			super(name);
+			this.setAccelerator(KeyStroke.getKeyStroke(key, SwingUtils.SHORTCUT_KEY));
+			this.panel = panel;
+			this.addActionListener(this);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (int i = 0, n = viewMenu.getItemCount(); i < n; i++) {
+				ViewMenuItem vmi = (ViewMenuItem)viewMenu.getItem(i);
+				vmi.setSelected(vmi.panel == this.panel);
+			}
+			setContentPane(this.panel);
+			pack();
+		}
 	}
 	
 	private JPanel createStandardPanel() {
