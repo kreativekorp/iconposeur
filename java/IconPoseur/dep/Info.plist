@@ -64,6 +64,24 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>ico</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Windows icon</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>ICOf</string>
+				<string>ICOo</string>
+				<string>ICO </string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
 	</array>
 </dict>
 </plist>
