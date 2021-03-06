@@ -4,6 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 
 public class ColorTablePanel extends JComponent {
@@ -13,12 +18,16 @@ public class ColorTablePanel extends JComponent {
 	private int columns;
 	private int[] colorTable;
 	private int selectedIndex;
+	private final List<ColorTableListener> listeners;
 	
 	public ColorTablePanel(int rows, int columns, int[] colorTable) {
 		this.rows = rows;
 		this.columns = columns;
 		this.colorTable = colorTable;
 		this.selectedIndex = -1;
+		this.listeners = new ArrayList<ColorTableListener>();
+		addMouseListener(mouseListener);
+		addMouseMotionListener(mouseListener);
 	}
 	
 	public int getRowCount() {
@@ -28,6 +37,7 @@ public class ColorTablePanel extends JComponent {
 	public void setRowCount(int rows) {
 		this.rows = rows;
 		this.repaint();
+		for (ColorTableListener l : listeners) l.dimensionsChanged(this);
 	}
 	
 	public int getColumnCount() {
@@ -37,6 +47,7 @@ public class ColorTablePanel extends JComponent {
 	public void setColumnCount(int columns) {
 		this.columns = columns;
 		this.repaint();
+		for (ColorTableListener l : listeners) l.dimensionsChanged(this);
 	}
 	
 	public int[] getColorTable() {
@@ -46,6 +57,7 @@ public class ColorTablePanel extends JComponent {
 	public void setColorTable(int[] colorTable) {
 		this.colorTable = colorTable;
 		this.repaint();
+		for (ColorTableListener l : listeners) l.colorTableChanged(this);
 	}
 	
 	public int getColor(int index) {
@@ -55,6 +67,7 @@ public class ColorTablePanel extends JComponent {
 	public void setColor(int index, int color) {
 		this.colorTable[index] = color;
 		this.repaint();
+		for (ColorTableListener l : listeners) l.colorTableChanged(this);
 	}
 	
 	public int getSelectedIndex() {
@@ -64,6 +77,15 @@ public class ColorTablePanel extends JComponent {
 	public void setSelectedIndex(int selectedIndex) {
 		this.selectedIndex = selectedIndex;
 		this.repaint();
+		for (ColorTableListener l : listeners) l.selectionChanged(this);
+	}
+	
+	public void addColorTableListener(ColorTableListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeColorTableListener(ColorTableListener listener) {
+		listeners.remove(listener);
 	}
 	
 	@Override
@@ -115,4 +137,40 @@ public class ColorTablePanel extends JComponent {
 			}
 		}
 	}
+	
+	public int getIndexAt(int x, int y) {
+		Insets i = getInsets();
+		int w = getWidth() - i.left - i.right;
+		int h = getHeight() - i.top - i.bottom;
+		x -= i.left; if (x < 0 || x >= w) return -1;
+		y -= i.top; if (y < 0 || y >= h) return -1;
+		return (rows * y / h) * columns + (columns * x / w);
+	}
+	
+	private final MouseAdapter mouseListener = new MouseAdapter() {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			setSelectedIndex(getIndexAt(e.getX(), e.getY()));
+		}
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			setSelectedIndex(getIndexAt(e.getX(), e.getY()));
+		}
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() > 1) {
+				int i = getIndexAt(e.getX(), e.getY());
+				if (i >= 0 && i < colorTable.length) {
+					Color c = JColorChooser.showDialog(
+						ColorTablePanel.this,
+						("Color #" + i),
+						new Color(colorTable[i])
+					);
+					if (c != null) {
+						setColor(i, c.getRGB());
+					}
+				}
+			}
+		}
+	};
 }

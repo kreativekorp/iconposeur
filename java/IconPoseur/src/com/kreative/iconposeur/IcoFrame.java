@@ -29,9 +29,9 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	private static final long serialVersionUID = 1L;
 	
 	private final int[] palette0 = new int[0];
-	private final int[] palette1 = ColorPalettes.createBlackToWhite(1);
-	private final int[] palette4 = ColorPalettes.createWindows4();
-	private final int[] palette8 = ColorPalettes.createWindowsEis();
+	private final int[] palette1 = ColorTables.createBlackToWhite(1);
+	private final int[] palette4 = ColorTables.createWindows4();
+	private final int[] palette8 = ColorTables.createWindowsEis();
 	
 	private final WinIconDir ico;
 	private final IconWellGroup wells;

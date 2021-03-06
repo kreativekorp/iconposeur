@@ -1,6 +1,6 @@
 package com.kreative.iconposeur;
 
-public class ColorPalettes {
+public class ColorTables {
 	public static int[] createBlackToWhite(int bpp) {
 		int colors = (1 << bpp);
 		int[] colorTable = new int[colors];

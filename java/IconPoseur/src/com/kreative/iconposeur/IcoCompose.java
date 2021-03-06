@@ -33,37 +33,46 @@ public class IcoCompose {
 					colorTable = new int[0];
 				} else if (arg.equals("-bw") || arg.equals("--blackwhite")) {
 					bpp = 1;
-					colorTable = ColorPalettes.createBlackToWhite(1);
+					colorTable = ColorTables.createBlackToWhite(1);
 				} else if (arg.equals("-wb") || arg.equals("--whiteblack")) {
 					bpp = 1;
-					colorTable = ColorPalettes.createWhiteToBlack(1);
+					colorTable = ColorTables.createWhiteToBlack(1);
 				} else if (arg.equals("-bw2") || arg.equals("--blackwhite2bit")) {
 					bpp = 2;
-					colorTable = ColorPalettes.createBlackToWhite(2);
+					colorTable = ColorTables.createBlackToWhite(2);
 				} else if (arg.equals("-wb2") || arg.equals("--whiteblack2bit")) {
 					bpp = 2;
-					colorTable = ColorPalettes.createWhiteToBlack(2);
+					colorTable = ColorTables.createWhiteToBlack(2);
 				} else if (arg.equals("-bw4") || arg.equals("--blackwhite4bit")) {
 					bpp = 4;
-					colorTable = ColorPalettes.createBlackToWhite(4);
+					colorTable = ColorTables.createBlackToWhite(4);
 				} else if (arg.equals("-wb4") || arg.equals("--whiteblack4bit")) {
 					bpp = 4;
-					colorTable = ColorPalettes.createWhiteToBlack(4);
+					colorTable = ColorTables.createWhiteToBlack(4);
 				} else if (arg.equals("-bw8") || arg.equals("--blackwhite8bit")) {
 					bpp = 8;
-					colorTable = ColorPalettes.createBlackToWhite(8);
+					colorTable = ColorTables.createBlackToWhite(8);
 				} else if (arg.equals("-wb8") || arg.equals("--whiteblack8bit")) {
 					bpp = 8;
-					colorTable = ColorPalettes.createWhiteToBlack(8);
+					colorTable = ColorTables.createWhiteToBlack(8);
 				} else if (arg.equals("-w4") || arg.equals("--windows4bit")) {
 					bpp = 4;
-					colorTable = ColorPalettes.createWindows4();
+					colorTable = ColorTables.createWindows4();
 				} else if (arg.equals("-m4") || arg.equals("--macintosh4bit")) {
 					bpp = 4;
-					colorTable = ColorPalettes.createMacintosh4();
+					colorTable = ColorTables.createMacintosh4();
+				} else if (arg.equals("-we") || arg.equals("--windowseis")) {
+					bpp = 8;
+					colorTable = ColorTables.createWindowsEis();
+				} else if (arg.equals("-wp") || arg.equals("--windowspaint")) {
+					bpp = 8;
+					colorTable = ColorTables.createWindowsPaint();
+				} else if (arg.equals("-ww") || arg.equals("--windowswebsafe")) {
+					bpp = 8;
+					colorTable = ColorTables.createWindowsWebSafe();
 				} else if (arg.equals("-m8") || arg.equals("--macintosh8bit")) {
 					bpp = 8;
-					colorTable = ColorPalettes.createMacintosh8();
+					colorTable = ColorTables.createMacintosh8();
 				} else if (arg.equals("-h") || arg.equals("--highcolor")) {
 					bpp = 16;
 					colorTable = new int[0];
