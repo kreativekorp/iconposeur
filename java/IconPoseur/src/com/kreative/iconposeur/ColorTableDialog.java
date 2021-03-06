@@ -91,9 +91,9 @@ public class ColorTableDialog extends JDialog {
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(loadButton);
 		buttonPanel.add(saveButton);
-		buttonPanel.add(Box.createHorizontalStrut(80));
 		JPanel rightPanel = new JPanel(new BorderLayout());
 		rightPanel.add(buttonPanel, BorderLayout.PAGE_START);
+		rightPanel.add(Box.createHorizontalStrut(80), BorderLayout.CENTER);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout(16, 16));
 		mainPanel.add(leftPanel, BorderLayout.CENTER);
