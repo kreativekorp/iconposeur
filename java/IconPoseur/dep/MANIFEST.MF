@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Created-By: 1.0 (Kreative Software)
 Main-Class: com.kreative.iconposeur.Main
+Class-Path: jai-imageio-core.jar jai-imageio-jpeg2000.jar ual.jar dep/jai-imageio-core.jar dep/jai-imageio-jpeg2000.jar dep/ual.jar

@@ -41,6 +41,9 @@ Icon\ Poseur.app: dep iconposeur.jar
 
 install: iconposeur.jar
 	sudo mkdir -p /usr/local/lib/
+	sudo cp -f dep/jai-imageio-core.jar /usr/local/lib/jai-imageio-core.jar
+	sudo cp -f dep/jai-imageio-jpeg2000.jar /usr/local/lib/jai-imageio-jpeg2000.jar
+	sudo cp -f dep/ual.jar /usr/local/lib/ual.jar
 	sudo cp -f iconposeur.jar /usr/local/lib/iconposeur.jar
 	sudo chmod -f 644 /usr/local/lib/iconposeur.jar
 	sudo mkdir -p /usr/local/bin/
