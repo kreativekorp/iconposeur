@@ -1,0 +1,33 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <outfile>IconPoseur.exe</outfile>
+  <jar>iconposeur.jar</jar>
+  <dontWrapJar>true</dontWrapJar>
+  <errTitle>Icon Poseur</errTitle>
+  <chdir>.</chdir>
+  <customProcName>true</customProcName>
+  <icon>iconposeur.ico</icon>
+  <classPath>
+  	<mainClass>com.kreative.iconposeur.Main</mainClass>
+  	<cp>iconposeur.jar</cp>
+  	<cp>jai-imageio-core.jar</cp>
+  	<cp>jai-imageio-jpeg2000.jar</cp>
+  	<cp>ual.jar</cp>
+  </classPath>
+  <jre>
+    <minVersion>1.5.0</minVersion>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0</txtFileVersion>
+    <fileDescription>Icon Poseur</fileDescription>
+    <copyright>(C) 2021 Kreative Software</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0</txtProductVersion>
+    <productName>Icon Poseur</productName>
+    <companyName>Kreative Software</companyName>
+    <internalName>IconPoseur</internalName>
+    <originalFilename>IconPoseur.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

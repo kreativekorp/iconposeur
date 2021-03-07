@@ -1,19 +1,23 @@
 SRCFILES := $(shell find src -name \*.java)
 PACKAGES := $(shell find src -name \*.java | sed -E s/^src\\/\|\\/[^\\/]+$$//g | sort | uniq | tr / .)
 
-all: clean bin doc iconposeur.jar Icon\ Poseur.app
+all: clean bin doc iconposeur.jar iconposeur.zip Icon\ Poseur.app
 
-eclipseall: eclipseclean iconposeur.jar Icon\ Poseur.app
+eclipseall: eclipseclean iconposeur.jar iconposeur.zip Icon\ Poseur.app
 
 clean:
 	rm -rf bin
 	rm -rf doc
 	rm -rf *.jar
+	rm -rf *.zip
 	rm -rf *.app
+	rm -rf *.dmg
 
 eclipseclean:
 	rm -rf *.jar
+	rm -rf *.zip
 	rm -rf *.app
+	rm -rf *.dmg
 
 bin: src
 	mkdir -p bin
@@ -29,6 +33,15 @@ iconposeur.jar: bin
 	jar cmf dep/MANIFEST.MF iconposeur.jar -C bin com/kreative/iconposeur
 	chmod +x iconposeur.jar
 
+iconposeur.zip: dep iconposeur.jar
+	rm -rf Icon\ Poseur
+	mkdir -p Icon\ Poseur
+	cp -f dep/IconPoseur.exe Icon\ Poseur
+	cp -f dep/*.jar Icon\ Poseur
+	cp -f iconposeur.jar Icon\ Poseur
+	zip -r iconposeur.zip Icon\ Poseur
+	rm -rf Icon\ Poseur
+
 Icon\ Poseur.app: dep iconposeur.jar
 	mkdir -p Icon\ Poseur.app/Contents/MacOS
 	mkdir -p Icon\ Poseur.app/Contents/Resources/Java
@@ -38,6 +51,13 @@ Icon\ Poseur.app: dep iconposeur.jar
 	cp -f dep/iconposeur.icns Icon\ Poseur.app/Contents/Resources
 	cp -f dep/*.jar Icon\ Poseur.app/Contents/Resources/Java
 	cp -f iconposeur.jar Icon\ Poseur.app/Contents/Resources/Java
+
+iconposeur.dmg: Icon\ Poseur.app
+	rm -rf dmgtmp
+	mkdir -p dmgtmp
+	cp -R Icon\ Poseur.app dmgtmp
+	hdiutil create -fs HFS+ -volname "Icon Poseur" -srcfolder dmgtmp iconposeur.dmg
+	rm -rf dmgtmp
 
 install: iconposeur.jar
 	sudo mkdir -p /usr/local/lib/
