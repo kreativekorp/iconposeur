@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -26,8 +28,11 @@ public class ColorTablePanel extends JComponent {
 		this.colorTable = colorTable;
 		this.selectedIndex = -1;
 		this.listeners = new ArrayList<ColorTableListener>();
+		setFocusable(true);
+		setRequestFocusEnabled(true);
 		addMouseListener(mouseListener);
 		addMouseMotionListener(mouseListener);
+		addKeyListener(keyListener);
 	}
 	
 	public int getRowCount() {
@@ -147,9 +152,25 @@ public class ColorTablePanel extends JComponent {
 		return (rows * y / h) * columns + (columns * x / w);
 	}
 	
+	public boolean editColor(int index) {
+		if (index >= 0 && index < colorTable.length) {
+			Color c = JColorChooser.showDialog(
+				ColorTablePanel.this,
+				("Color #" + index),
+				new Color(colorTable[index], true)
+			);
+			if (c != null) {
+				setColor(index, c.getRGB());
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private final MouseAdapter mouseListener = new MouseAdapter() {
 		@Override
 		public void mousePressed(MouseEvent e) {
+			requestFocusInWindow();
 			setSelectedIndex(getIndexAt(e.getX(), e.getY()));
 		}
 		@Override
@@ -159,17 +180,70 @@ public class ColorTablePanel extends JComponent {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() > 1) {
-				int i = getIndexAt(e.getX(), e.getY());
-				if (i >= 0 && i < colorTable.length) {
-					Color c = JColorChooser.showDialog(
-						ColorTablePanel.this,
-						("Color #" + i),
-						new Color(colorTable[i], true)
-					);
-					if (c != null) {
-						setColor(i, c.getRGB());
+				editColor(getIndexAt(e.getX(), e.getY()));
+			}
+		}
+	};
+	
+	private final KeyAdapter keyListener = new KeyAdapter() {
+		@Override
+		public void keyPressed(KeyEvent e) {
+			switch (e.getKeyCode()) {
+				case KeyEvent.VK_LEFT:
+					if (selectedIndex < 0) {
+						setSelectedIndex(colorTable.length - 1);
+					} else if (selectedIndex > 0) {
+						setSelectedIndex(selectedIndex - 1);
 					}
-				}
+					e.consume();
+					break;
+				case KeyEvent.VK_RIGHT:
+					if (selectedIndex < 0) {
+						setSelectedIndex(0);
+					} else if (selectedIndex < (colorTable.length - 1)) {
+						setSelectedIndex(selectedIndex + 1);
+					}
+					e.consume();
+					break;
+				case KeyEvent.VK_UP:
+					if (selectedIndex < 0) {
+						setSelectedIndex(colorTable.length - 1);
+					} else if (selectedIndex > 0) {
+						setSelectedIndex(Math.max(0, selectedIndex - columns));
+					}
+					e.consume();
+					break;
+				case KeyEvent.VK_DOWN:
+					if (selectedIndex < 0) {
+						setSelectedIndex(0);
+					} else if (selectedIndex < (colorTable.length - 1)) {
+						setSelectedIndex(Math.min(colorTable.length - 1, selectedIndex + columns));
+					}
+					e.consume();
+					break;
+				case KeyEvent.VK_HOME:
+					setSelectedIndex(0);
+					e.consume();
+					break;
+				case KeyEvent.VK_END:
+					setSelectedIndex(colorTable.length - 1);
+					e.consume();
+					break;
+				case KeyEvent.VK_BACK_QUOTE:
+				case KeyEvent.VK_CLEAR:
+					setSelectedIndex(-1);
+					e.consume();
+					break;
+				case KeyEvent.VK_BACK_SPACE:
+				case KeyEvent.VK_DELETE:
+					if (selectedIndex >= 0) setColor(selectedIndex, 0);
+					e.consume();
+					break;
+				case KeyEvent.VK_SPACE:
+				case KeyEvent.VK_INSERT:
+					if (selectedIndex >= 0) editColor(selectedIndex);
+					e.consume();
+					break;
 			}
 		}
 	};
