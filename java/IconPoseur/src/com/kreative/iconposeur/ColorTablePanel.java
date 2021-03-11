@@ -131,7 +131,7 @@ public class ColorTablePanel extends JComponent {
 						g.setColor(Color.black);
 						g.fillRect(gx, gy, gw, gh);
 					}
-					g.setColor(new Color(colorTable[idx]));
+					g.setColor(new Color(colorTable[idx], true));
 					g.fillRect(gx + 1, gy + 1, gw - 2, gh - 2);
 				}
 			}
@@ -164,7 +164,7 @@ public class ColorTablePanel extends JComponent {
 					Color c = JColorChooser.showDialog(
 						ColorTablePanel.this,
 						("Color #" + i),
-						new Color(colorTable[i])
+						new Color(colorTable[i], true)
 					);
 					if (c != null) {
 						setColor(i, c.getRGB());

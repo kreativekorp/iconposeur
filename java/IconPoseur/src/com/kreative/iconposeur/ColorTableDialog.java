@@ -343,11 +343,15 @@ public class ColorTableDialog extends JDialog {
 		public abstract int[] createColorTable();
 	}
 	
-	private static Preset[] createPresets(int colorCount) {
+	private static Preset[] createPresets(final int colorCount) {
 		List<Preset> presets = new ArrayList<Preset>();
 		presets.add(new Preset() {
 			@Override public String toString() { return "Custom"; }
 			@Override public int[] createColorTable() { return null; }
+		});
+		presets.add(new Preset() {
+			@Override public String toString() { return "Adaptive"; }
+			@Override public int[] createColorTable() { return new int[colorCount]; }
 		});
 		if (colorCount == 2) {
 			presets.add(new Preset() {
@@ -388,6 +392,10 @@ public class ColorTableDialog extends JDialog {
 			});
 		}
 		if (colorCount == 256) {
+			presets.add(new Preset() {
+				@Override public String toString() { return "Windows (Adaptive)"; }
+				@Override public int[] createColorTable() { return ColorTables.createWindowsBase(); }
+			});
 			presets.add(new Preset() {
 				@Override public String toString() { return "Windows (Eis)"; }
 				@Override public int[] createColorTable() { return ColorTables.createWindowsEis(); }

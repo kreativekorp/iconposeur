@@ -353,15 +353,6 @@ public class WinIconDirEntry {
 		return colorTable;
 	}
 	
-	/*
-	private static void putColorTable(byte[] data, int dp, int[] colorTable) {
-		for (int color : colorTable) {
-			putInt32LE(data, dp, (color & 0xFFFFFF));
-			dp += 4;
-		}
-	}
-	*/
-	
 	private static void decodeImage(byte[] data, int dp, int[] pixels, int width, int height, int bpp, int colors, boolean mask) {
 		int[] colorTable = new int[colors];
 		for (int i = 0; i < colors; i++) {
@@ -387,6 +378,26 @@ public class WinIconDirEntry {
 	}
 	
 	private static void encodeImage(byte[] data, int dp, int[] pixels, int width, int height, int bpp, int[] colorTable, boolean mask) {
+		int adaptiveCount = 0;
+		for (int color : colorTable) if (color == 0) adaptiveCount++;
+		if (adaptiveCount > 0) {
+			int[] adaptivePixels = new int[pixels.length];
+			for (int i = 0; i < pixels.length; i++) adaptivePixels[i] = pixels[i];
+			int[] adaptiveColors = ColorReducer.reduce(adaptivePixels, adaptiveCount);
+			int adaptiveIndex = 0;
+			int[] newColorTable = new int[colorTable.length];
+			for (int i = 0; i < colorTable.length; i++) {
+				if (colorTable[i] != 0) {
+					newColorTable[i] = colorTable[i];
+				} else if (adaptiveIndex < adaptiveColors.length) {
+					newColorTable[i] = adaptiveColors[adaptiveIndex++];
+				} else {
+					newColorTable[i] = -1;
+				}
+			}
+			colorTable = newColorTable;
+		}
+		
 		for (int color : colorTable) {
 			putInt32LE(data, dp, (color & 0xFFFFFF));
 			dp += 4;

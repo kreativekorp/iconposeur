@@ -55,12 +55,27 @@ public class IcoCompose {
 				} else if (arg.equals("-wb8") || arg.equals("--whiteblack8bit")) {
 					bpp = 8;
 					colorTable = ColorTables.createWhiteToBlack(8);
+				} else if (arg.equals("-a1") || arg.equals("--adaptive1bit")) {
+					bpp = 1;
+					colorTable = new int[2];
+				} else if (arg.equals("-a2") || arg.equals("--adaptive2bit")) {
+					bpp = 2;
+					colorTable = new int[4];
+				} else if (arg.equals("-a4") || arg.equals("--adaptive4bit")) {
+					bpp = 4;
+					colorTable = new int[16];
+				} else if (arg.equals("-a8") || arg.equals("--adaptive8bit")) {
+					bpp = 8;
+					colorTable = new int[256];
 				} else if (arg.equals("-w4") || arg.equals("--windows4bit")) {
 					bpp = 4;
 					colorTable = ColorTables.createWindows4();
 				} else if (arg.equals("-m4") || arg.equals("--macintosh4bit")) {
 					bpp = 4;
 					colorTable = ColorTables.createMacintosh4();
+				} else if (arg.equals("-w8") || arg.equals("--windows8bit")) {
+					bpp = 8;
+					colorTable = ColorTables.createWindowsBase();
 				} else if (arg.equals("-we") || arg.equals("--windowseis")) {
 					bpp = 8;
 					colorTable = ColorTables.createWindowsEis();
