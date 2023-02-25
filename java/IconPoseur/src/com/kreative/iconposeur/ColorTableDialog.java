@@ -164,13 +164,16 @@ public class ColorTableDialog extends JDialog {
 		});
 	}
 	
+	private static String lastLoadDirectory = null;
 	private void load() {
 		FileDialog fd = new FileDialog(this, "Load", FileDialog.LOAD);
+		if (lastLoadDirectory != null) fd.setDirectory(lastLoadDirectory);
 		fd.setVisible(true);
 		String parent = fd.getDirectory();
 		String name = fd.getFile();
+		fd.dispose();
 		if (parent == null || name == null) return;
-		File file = new File(parent, name);
+		File file = new File((lastLoadDirectory = parent), name);
 		try {
 			if (name.toLowerCase().endsWith(".act")) {
 				readACT(file);
@@ -249,13 +252,16 @@ public class ColorTableDialog extends JDialog {
 		panel.setColorTable(ct);
 	}
 	
+	private static String lastSaveDirectory = null;
 	private void save() {
 		FileDialog fd = new FileDialog(this, "Save", FileDialog.SAVE);
+		if (lastSaveDirectory != null) fd.setDirectory(lastSaveDirectory);
 		fd.setVisible(true);
 		String parent = fd.getDirectory();
 		String name = fd.getFile();
+		fd.dispose();
 		if (parent == null || name == null) return;
-		File file = new File(parent, name);
+		File file = new File((lastSaveDirectory = parent), name);
 		try {
 			if (name.toLowerCase().endsWith(".act")) {
 				writeACT(file);

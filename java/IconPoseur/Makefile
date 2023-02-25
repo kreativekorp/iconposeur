@@ -1,5 +1,6 @@
 SRCFILES := $(shell find src -name \*.java)
-PACKAGES := $(shell find src -name \*.java | sed -E s/^src\\/\|\\/[^\\/]+$$//g | sort | uniq | tr / .)
+RESFILES := $(shell find src -type f \! -name .\* \! -name \*.java | sed s/^src\\///)
+PACKAGES := $(shell find src -name \*.java | sed -E s/^src\\/\|\\/[^\\/]+$$//g | grep -v \\.java$$ | sort | uniq | tr / .)
 
 all: clean bin doc iconposeur.jar iconposeur.zip Icon\ Poseur.app
 
@@ -21,7 +22,11 @@ eclipseclean:
 
 bin: src
 	mkdir -p bin
+ifeq ($(origin JAVACFLAGS), undefined)
+	$(eval JAVACFLAGS = $(shell dep/minJavaVerOpts))
+endif
 	javac $(JAVACFLAGS) -classpath dep/ual.jar -sourcepath src $(SRCFILES) -d bin
+	$(foreach res,$(RESFILES),cp src/$(res) bin/$(res);)
 
 doc: src
 	mkdir -p doc
@@ -42,20 +47,42 @@ iconposeur.zip: dep iconposeur.jar
 	zip -r iconposeur.zip Icon\ Poseur
 	rm -rf Icon\ Poseur
 
-Icon\ Poseur.app: dep iconposeur.jar
-	mkdir -p Icon\ Poseur.app/Contents/MacOS
-	mkdir -p Icon\ Poseur.app/Contents/Resources/Java
-	cp -f dep/PkgInfo Icon\ Poseur.app/Contents
-	cp -f dep/Info.plist Icon\ Poseur.app/Contents
-	cp -f dep/universalJavaApplicationStub Icon\ Poseur.app/Contents/MacOS/Icon\ Poseur
-	cp -f dep/iconposeur.icns Icon\ Poseur.app/Contents/Resources
-	cp -f dep/*.jar Icon\ Poseur.app/Contents/Resources/Java
-	cp -f iconposeur.jar Icon\ Poseur.app/Contents/Resources/Java
+Icon\ Poseur.app: Icon\ Poseur-Pre10.15.app Icon\ Poseur-MacOS10.15.app Icon\ Poseur-MacOS11.0.app
+
+Icon\ Poseur-Pre10.15.app: dep iconposeur.jar
+	mkdir -p Icon\ Poseur-Pre10.15.app/Contents/MacOS
+	mkdir -p Icon\ Poseur-Pre10.15.app/Contents/Resources/Java
+	cp -f dep/PkgInfo Icon\ Poseur-Pre10.15.app/Contents
+	cp -f dep/Info.plist Icon\ Poseur-Pre10.15.app/Contents
+	cp -f dep/universalJavaApplicationStub-Pre10.15 Icon\ Poseur-Pre10.15.app/Contents/MacOS/Icon\ Poseur
+	cp -f dep/iconposeur.icns Icon\ Poseur-Pre10.15.app/Contents/Resources
+	cp -f dep/*.jar Icon\ Poseur-Pre10.15.app/Contents/Resources/Java
+	cp -f iconposeur.jar Icon\ Poseur-Pre10.15.app/Contents/Resources/Java
+
+Icon\ Poseur-MacOS10.15.app: dep iconposeur.jar
+	mkdir -p Icon\ Poseur-MacOS10.15.app/Contents/MacOS
+	mkdir -p Icon\ Poseur-MacOS10.15.app/Contents/Resources/Java
+	cp -f dep/PkgInfo Icon\ Poseur-MacOS10.15.app/Contents
+	cp -f dep/Info.plist Icon\ Poseur-MacOS10.15.app/Contents
+	cp -f dep/universalJavaApplicationStub-MacOS10.15 Icon\ Poseur-MacOS10.15.app/Contents/MacOS/Icon\ Poseur
+	cp -f dep/iconposeur.icns Icon\ Poseur-MacOS10.15.app/Contents/Resources
+	cp -f dep/*.jar Icon\ Poseur-MacOS10.15.app/Contents/Resources/Java
+	cp -f iconposeur.jar Icon\ Poseur-MacOS10.15.app/Contents/Resources/Java
+
+Icon\ Poseur-MacOS11.0.app: dep iconposeur.jar
+	mkdir -p Icon\ Poseur-MacOS11.0.app/Contents/MacOS
+	mkdir -p Icon\ Poseur-MacOS11.0.app/Contents/Resources/Java
+	cp -f dep/PkgInfo Icon\ Poseur-MacOS11.0.app/Contents
+	cp -f dep/Info.plist Icon\ Poseur-MacOS11.0.app/Contents
+	cp -f dep/universalJavaApplicationStub-MacOS11.0 Icon\ Poseur-MacOS11.0.app/Contents/MacOS/Icon\ Poseur
+	cp -f dep/iconposeur.icns Icon\ Poseur-MacOS11.0.app/Contents/Resources
+	cp -f dep/*.jar Icon\ Poseur-MacOS11.0.app/Contents/Resources/Java
+	cp -f iconposeur.jar Icon\ Poseur-MacOS11.0.app/Contents/Resources/Java
 
 iconposeur.dmg: Icon\ Poseur.app
 	rm -rf dmgtmp
 	mkdir -p dmgtmp
-	cp -R Icon\ Poseur.app dmgtmp
+	cp -R Icon\ Poseur*.app dmgtmp
 	hdiutil create -fs HFS+ -volname "Icon Poseur" -srcfolder dmgtmp iconposeur.dmg
 	rm -rf dmgtmp
 
@@ -76,4 +103,4 @@ install: iconposeur.jar
 	sudo cp -f dep/iconposeur.desktop /usr/share/applications/iconposeur.desktop
 	sudo chmod -f 644 /usr/share/applications/iconposeur.desktop
 
-.PHONY: all eclipseall clean eclipseclean install
+.PHONY: all eclipseall clean eclipseclean Icon\ Poseur.app install

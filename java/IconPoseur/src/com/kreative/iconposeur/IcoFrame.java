@@ -1,7 +1,6 @@
 package com.kreative.iconposeur;
 
 import java.awt.BorderLayout;
-import java.awt.FileDialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -473,12 +472,9 @@ public class IcoFrame extends JFrame implements SaveInterface {
 	
 	@Override
 	public boolean saveAs() {
-		FileDialog fd = new FileDialog(this, "Save", FileDialog.SAVE);
-		fd.setVisible(true);
-		String parent = fd.getDirectory();
-		String name = fd.getFile();
-		if (parent == null || name == null) return false;
-		file = new File(parent, name);
+		File saveFile = Main.getSaveFile(this, ".ico");
+		if (saveFile == null) return false;
+		file = saveFile;
 		return save();
 	}
 	

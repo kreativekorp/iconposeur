@@ -57,13 +57,18 @@ public class Main {
 		return f;
 	}
 	
+	private static String lastOpenDirectory = null;
 	public static JFrame openIcon() {
-		FileDialog fd = new FileDialog(new Frame(), "Open", FileDialog.LOAD);
+		Frame frame = new Frame();
+		FileDialog fd = new FileDialog(frame, "Open", FileDialog.LOAD);
+		if (lastOpenDirectory != null) fd.setDirectory(lastOpenDirectory);
 		fd.setVisible(true);
 		String parent = fd.getDirectory();
 		String name = fd.getFile();
+		fd.dispose();
+		frame.dispose();
 		if (parent == null || name == null) return null;
-		File file = new File(parent, name);
+		File file = new File((lastOpenDirectory = parent), name);
 		return openIcon(file);
 	}
 	
@@ -87,5 +92,18 @@ public class Main {
 			);
 			return null;
 		}
+	}
+	
+	private static String lastSaveDirectory = null;
+	public static File getSaveFile(Frame frame, String suffix) {
+		FileDialog fd = new FileDialog(frame, "Save", FileDialog.SAVE);
+		if (lastSaveDirectory != null) fd.setDirectory(lastSaveDirectory);
+		fd.setVisible(true);
+		String parent = fd.getDirectory();
+		String name = fd.getFile();
+		fd.dispose();
+		if (parent == null || name == null) return null;
+		if (!name.toLowerCase().endsWith(suffix.toLowerCase())) name += suffix;
+		return new File((lastSaveDirectory = parent), name);
 	}
 }

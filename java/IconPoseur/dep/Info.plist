@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Icon Poseur</string>
 	<key>CFBundleGetInfoString</key>
-	<string>© 2021 Kreative Software</string>
+	<string>© 2021-2023 Kreative Software</string>
 	<key>CFBundleIconFile</key>
 	<string>iconposeur.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -21,11 +21,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.1</string>
 	<key>CFBundleSignature</key>
 	<string>icnP</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.0.1</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>JavaX</key>
