@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,10 +26,14 @@ public class IcnsExtract {
 			if (parseOpts && arg.startsWith("-")) {
 				if (arg.equals("--")) {
 					parseOpts = false;
+				} else if (arg.equals("--help")) {
+					printHelp();
 				} else if (arg.equals("-f") && argi < args.length) {
 					format = args[argi++];
 				} else if (arg.equals("-r")) {
 					format = "icns";
+				} else if (arg.equals("-p")) {
+					format = "png";
 				} else if (arg.equals("-o") && argi < args.length) {
 					File dst = new File(args[argi++]);
 					if (dst.isDirectory()) {
@@ -52,6 +57,20 @@ public class IcnsExtract {
 				dstName = null;
 			}
 		}
+	}
+	
+	private static void printHelp() {
+		System.out.println("IcnsExtract - Extract Mac OS Finder icon resources as icns files.");
+		System.out.println();
+		System.out.println("Usage:");
+		System.out.println("  IcnsExtract [ -f <format> | -r | -p ] [ -o <dst-path> ] <src-files>");
+		System.out.println();
+		System.out.println("Options:");
+		System.out.println("  -f <format>   Output format. Either \"icns\" or an image format.");
+		System.out.println("  -r            Equivalent to -f icns");
+		System.out.println("  -p            Equivalent to -f png");
+		System.out.println("  -o <path>     Specify destination file or directory.");
+		System.out.println("  --            Treat remaining arguments as source files.");
 	}
 	
 	private static void process(File src, String format, File dstDir, String dstName) {
@@ -192,22 +211,42 @@ public class IcnsExtract {
 			try {
 				// AppleDouble (Mac OS X)
 				File adf = new File(file.getParentFile(), "._" + file.getName());
-				AppleSingleFile adh = new AppleSingleFile(adf);
-				return new MacResourceFile(adh.getPartData(AppleSingleFile.PART_RESOURCE_FORK));
+				AppleFile adh = new AppleFile(adf);
+				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
 			} catch (Exception e) {}
 			
 			try {
 				// AppleDouble (A/UX)
 				File adf = new File(file.getParentFile(), "%" + file.getName());
-				AppleSingleFile adh = new AppleSingleFile(adf);
-				return new MacResourceFile(adh.getPartData(AppleSingleFile.PART_RESOURCE_FORK));
+				AppleFile adh = new AppleFile(adf);
+				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
 			} catch (Exception e) {}
 			
 			try {
 				// AppleDouble (ProDOS)
 				File adf = new File(file.getParentFile(), "R." + file.getName());
-				AppleSingleFile adh = new AppleSingleFile(adf);
-				return new MacResourceFile(adh.getPartData(AppleSingleFile.PART_RESOURCE_FORK));
+				AppleFile adh = new AppleFile(adf);
+				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
+			} catch (Exception e) {}
+			
+			try {
+				// AppleSingle
+				AppleFile adh = new AppleFile(file);
+				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
+			} catch (Exception e) {}
+			
+			try {
+				// BinHex 4.0
+				BinHexInputStream hqx = new BinHexInputStream(new FileInputStream(file));
+				AppleFile adh = hqx.readAppleFile();
+				hqx.close();
+				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
+			} catch (Exception e) {}
+			
+			try {
+				// MacBinary
+				AppleFile adh = MacBinaryUtility.read(file);
+				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
 			} catch (Exception e) {}
 			
 			// No resource fork found.
