@@ -35,7 +35,7 @@ doc: src
 iconposeur.jar: bin
 	export COPYFILE_DISABLE=true
 	find bin -name .DS_Store -delete
-	jar cmf dep/MANIFEST.MF iconposeur.jar -C bin com/kreative/iconposeur
+	jar cmf dep/MANIFEST.MF iconposeur.jar -C bin com/kreative
 	chmod +x iconposeur.jar
 
 iconposeur.zip: dep iconposeur.jar

@@ -1,4 +1,4 @@
-package com.kreative.iconposeur;
+package com.kreative.applefile;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -13,6 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import com.kreative.applefile.AppleFile;
+import com.kreative.applefile.AppleFilePart;
+import com.kreative.applefile.BinHexInputStream;
+import com.kreative.applefile.MacBinaryUtility;
+import com.kreative.applefile.MacResource;
+import com.kreative.applefile.MacResourceFile;
+import com.kreative.applefile.MacResourceType;
 
 public class IcnsExtract {
 	public static void main(String[] args) {
