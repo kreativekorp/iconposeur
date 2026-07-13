@@ -47,6 +47,16 @@ public enum Format {
 			try { return MACBINARY.read(file); }
 			catch (IOException e) {}
 			
+			// Check inside FINDER.DAT
+			File fd = new File(parent, "FINDER.DAT");
+			if (fd.exists()) {
+				try {
+					FinderDotDat dat = new FinderDotDat(fd);
+					FinderDotDat.Entry e = dat.get(file.getName(), false);
+					if (e != null) return e.read();
+				} catch (IOException ex) {}
+			}
+			
 			return (isMacOS() ? NATIVE : DATA_FORK).read(file);
 		}
 		public boolean write(File file, AppleFile af) throws IOException {
@@ -189,28 +199,20 @@ public enum Format {
 	},
 	PC_EXCHANGE("PC/File Exchange", "pcexchange", "fileexchange", "macos9", "os9") {
 		public AppleFile read(File file) throws IOException {
+			FinderDotDat dat = new FinderDotDat(new File(file.getParentFile(), "FINDER.DAT"));
+			FinderDotDat.Entry e = dat.get(file.getName(), false);
+			if (e != null) return e.read();
+			// No Finder info
 			AppleFile af = new AppleFile(false, true, "Mac OS 9");
-			// How to do Finder info?
 			File rsrc = new File(new File(file.getParentFile(), "RESOURCE.FRK"), file.getName());
 			if (rsrc.exists()) af.setPartData(AppleFilePart.TYPE_RESOURCE_FORK, rsrc);
 			af.setPartData(AppleFilePart.TYPE_DATA_FORK, file);
 			return af;
 		}
 		public boolean write(File file, AppleFile af) throws IOException {
-			byte[] data = af.getPartData(AppleFilePart.TYPE_DATA_FORK);
-			FileOutputStream out = new FileOutputStream(file);
-			if (data != null) out.write(data);
-			out.close();
-			byte[] rsrc = af.getPartData(AppleFilePart.TYPE_RESOURCE_FORK);
-			if (rsrc != null && rsrc.length > 0) {
-				File d = new File(file.getParentFile(), "RESOURCE.FRK");
-				if (!d.isDirectory()) d.mkdir();
-				File f = new File(d, file.getName());
-				FileOutputStream o = new FileOutputStream(f);
-				o.write(rsrc);
-				o.close();
-			}
-			// How to do Finder info?
+			FinderDotDat dat = new FinderDotDat(new File(file.getParentFile(), "FINDER.DAT"));
+			dat.get(file.getName(), true).write(af);
+			dat.write();
 			return true;
 		}
 	},
@@ -318,7 +320,7 @@ public enum Format {
 		return valueOf(name);
 	}
 	
-	private static boolean isMacOS() throws IOException {
+	private static boolean isMacOS() {
 		try { return System.getProperty("os.name").toUpperCase().contains("MAC OS"); }
 		catch (Exception e) { return false; }
 	}

@@ -77,8 +77,8 @@ public class MacBinaryUtility {
 		byte[] date = new byte[16];
 		setAppleFileDate(date, 0, getHFSDate(header, 91));
 		setAppleFileDate(date, 4, getHFSDate(header, 95));
-		date[8] = -128;
-		date[12] = -128;
+		setAppleFileDate(date, 8, null);
+		setAppleFileDate(date, 12, null);
 		af.setPartData(AppleFilePart.TYPE_TIMESTAMP, date);
 		// Data fork
 		int dataLen = getInt32(header, 83);
@@ -222,19 +222,25 @@ public class MacBinaryUtility {
 		data[++offset] = (byte)v;
 	}
 	
-	private static int getHFSDate(byte[] data, int offset) {
-		return getInt32(data, offset) - 2082844800; // 1904-01-01 00:00:00 UTC
+	private static Integer getHFSDate(byte[] data, int offset) {
+		int i = getInt32(data, offset);
+		if (i == 0) return null;
+		return i - 2082844800; // 1904-01-01 00:00:00 UTC
 	}
 	
-	private static void setHFSDate(byte[] data, int offset, int date) {
-		setInt32(data, offset, date + 2082844800); // 1904-01-01 00:00:00 UTC
+	private static void setHFSDate(byte[] data, int offset, Integer date) {
+		if (date == null) setInt32(data, offset, 0);
+		else setInt32(data, offset, date + 2082844800); // 1904-01-01 00:00:00 UTC
 	}
 	
-	private static int getAppleFileDate(byte[] data, int offset) {
-		return getInt32(data, offset) + 946684800; // 2000-01-01 00:00:00 UTC
+	private static Integer getAppleFileDate(byte[] data, int offset) {
+		int i = getInt32(data, offset);
+		if (i == Integer.MIN_VALUE) return null;
+		return i + 946684800; // 2000-01-01 00:00:00 UTC
 	}
 	
-	private static void setAppleFileDate(byte[] data, int offset, int date) {
-		setInt32(data, offset, date - 946684800); // 2000-01-01 00:00:00 UTC
+	private static void setAppleFileDate(byte[] data, int offset, Integer date) {
+		if (date == null) setInt32(data, offset, Integer.MIN_VALUE);
+		else setInt32(data, offset, date - 946684800); // 2000-01-01 00:00:00 UTC
 	}
 }

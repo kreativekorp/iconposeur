@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import com.kreative.applefile.AppleFile;
 import com.kreative.applefile.AppleFilePart;
 import com.kreative.applefile.BinHexInputStream;
+import com.kreative.applefile.FinderDotDat;
 import com.kreative.applefile.MacBinaryUtility;
 import com.kreative.applefile.MacResource;
 import com.kreative.applefile.MacResourceFile;
@@ -254,6 +255,18 @@ public class IcnsExtract {
 				// MacBinary
 				AppleFile adh = MacBinaryUtility.read(file);
 				return new MacResourceFile(adh.getPartData(AppleFilePart.TYPE_RESOURCE_FORK));
+			} catch (Exception e) {}
+			
+			try {
+				// Check inside FINDER.DAT
+				File fd = new File(file.getParentFile(), "FINDER.DAT");
+				FinderDotDat dat = new FinderDotDat(fd);
+				FinderDotDat.Entry e = dat.get(file.getName(), false);
+				if (e != null) {
+					File rsrcDir = new File(file.getParentFile(), "RESOURCE.FRK");
+					File rsrcFile = new File(rsrcDir, e.getShortName());
+					return new MacResourceFile(rsrcFile);
+				}
 			} catch (Exception e) {}
 			
 			// No resource fork found.
