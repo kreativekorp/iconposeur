@@ -15,6 +15,10 @@ import com.kreative.applefile.MacResourceFile;
 
 public class IcnsToClassic {
 	public static void main(String[] args) {
+		if (args.length == 0) {
+			printHelp();
+			return;
+		}
 		Format format = Format.AUTO;
 		File dstDir = null;
 		String dstName = null;
@@ -86,12 +90,12 @@ public class IcnsToClassic {
 		System.out.println("IcnsToClassic - Convert icns files to Mac OS Classic custom icon files.");
 		System.out.println();
 		System.out.println("Usage:");
-		System.out.println("  IcnsToClassic [ -f <format> | -n | -r ] [ -o <dst-path> ] <src-files>");
+		System.out.println("  IcnsToClassic [ -f <format> ] [ -o <dst-path> ] <src-files>");
 		System.out.println();
 		System.out.println("Options:");
 		System.out.println("  -f <format>   Specify output format. Or use options below.");
-		System.out.println("  -a, --auto    Guess output format from parameters");
-		System.out.println("  -n, --native  Write file natively (Mac OS X only)");
+		System.out.println("  -a, --auto    Guess output format from parameters.");
+		System.out.println("  -n, --native  Write file natively (Mac OS X only).");
 		System.out.println("  -d, --data    Data fork in flat file");
 		System.out.println("  -r, --rsrc    Resource fork in flat file");
 		System.out.println("  -b, --bii     Basilisk II/SheepShaver (resources in .rsrc directory)");

@@ -10,16 +10,30 @@ import java.util.Scanner;
 public enum Format {
 	AUTO("Auto", "auto") {
 		public AppleFile read(File file) throws IOException {
-			File parent = file.getParentFile();
-			String name = file.getName();
+			// If file is empty, it's not one of these.
+			if (file.length() > 0) {
+				
+				// Guess using file extension
+				String lcname = file.getName().toLowerCase();
+				if (lcname.endsWith(".data")) return DATA_FORK.read(file);
+				if (lcname.endsWith(".rsrc")) return RESOURCE_FORK.read(file);
+				if (lcname.endsWith(".hqx")) return BINHEX.read(file);
+				if (lcname.endsWith(".bin")) return MACBINARY.read(file);
+				
+				// Guess using file contents
+				try { return APPLESINGLE.read(file); }
+				catch (IOException e) {}
+				
+				try { return BINHEX.read(file); }
+				catch (IOException e) {}
+				
+				try { return MACBINARY.read(file); }
+				catch (IOException e) {}
+			}
 			
 			// Guess using related files
-			File finf = new File(new File(parent, ".finf"), name);
-			File rsrc = new File(new File(parent, ".rsrc"), name);
-			if (finf.exists() || rsrc.exists()) return BASILISK_II.read(file);
-			
-			File rf = new File(new File(parent, "RESOURCE.FRK"), name);
-			if (rf.exists()) return PC_EXCHANGE.read(file);
+			File parent = file.getParentFile();
+			String name = file.getName();
 			
 			File osxadf = new File(parent, "._" + name);
 			if (osxadf.exists()) return APPLEDOUBLE_MACOSX.read(file);
@@ -30,32 +44,22 @@ public enum Format {
 			File pdosadf = new File(parent, "R." + name);
 			if (pdosadf.exists()) return APPLEDOUBLE_PRODOS.read(file);
 			
-			// Guess using file extension
-			String lcname = name.toLowerCase();
-			if (lcname.endsWith(".data")) return DATA_FORK.read(file);
-			if (lcname.endsWith(".rsrc")) return RESOURCE_FORK.read(file);
-			if (lcname.endsWith(".hqx")) return BINHEX.read(file);
-			if (lcname.endsWith(".bin")) return MACBINARY.read(file);
-			
-			// Guess using file contents
-			try { return APPLESINGLE.read(file); }
-			catch (IOException e) {}
-			
-			try { return BINHEX.read(file); }
-			catch (IOException e) {}
-			
-			try { return MACBINARY.read(file); }
-			catch (IOException e) {}
+			File finf = new File(new File(parent, ".finf"), name);
+			File rsrc = new File(new File(parent, ".rsrc"), name);
+			if (finf.exists() || rsrc.exists()) return BASILISK_II.read(file);
 			
 			// Check inside FINDER.DAT
 			File fd = new File(parent, "FINDER.DAT");
 			if (fd.exists()) {
 				try {
 					FinderDotDat dat = new FinderDotDat(fd);
-					FinderDotDat.Entry e = dat.get(file.getName(), false);
+					FinderDotDat.Entry e = dat.get(name, false);
 					if (e != null) return e.read();
 				} catch (IOException ex) {}
 			}
+			
+			File rf = new File(new File(parent, "RESOURCE.FRK"), name);
+			if (rf.exists()) return PC_EXCHANGE.read(file);
 			
 			return (isMacOS() ? NATIVE : DATA_FORK).read(file);
 		}

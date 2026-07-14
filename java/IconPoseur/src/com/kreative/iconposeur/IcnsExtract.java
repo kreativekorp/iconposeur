@@ -24,6 +24,10 @@ import com.kreative.applefile.MacResourceType;
 
 public class IcnsExtract {
 	public static void main(String[] args) {
+		if (args.length == 0) {
+			printHelp();
+			return;
+		}
 		String format = "icns";
 		File dstDir = null;
 		String dstName = null;

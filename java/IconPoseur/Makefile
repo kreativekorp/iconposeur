@@ -2,9 +2,9 @@ SRCFILES := $(shell find src -name \*.java)
 RESFILES := $(shell find src -type f \! -name .\* \! -name \*.java | sed s/^src\\///)
 PACKAGES := $(shell find src -name \*.java | sed -E s/^src\\/\|\\/[^\\/]+$$//g | grep -v \\.java$$ | sort | uniq | tr / .)
 
-all: clean bin doc iconposeur.jar iconposeur.zip Icon\ Poseur.app
+all: clean bin doc appleturnover.jar iconposeur.jar iconposeur.zip Icon\ Poseur.app
 
-eclipseall: eclipseclean iconposeur.jar iconposeur.zip Icon\ Poseur.app
+eclipseall: eclipseclean appleturnover.jar iconposeur.jar iconposeur.zip Icon\ Poseur.app
 
 clean:
 	rm -rf bin
@@ -31,6 +31,12 @@ endif
 doc: src
 	mkdir -p doc
 	javadoc $(JAVADOCFLAGS) -classpath dep/ual.jar -sourcepath src $(PACKAGES) -d doc
+
+appleturnover.jar: bin
+	export COPYFILE_DISABLE=true
+	find bin -name .DS_Store -delete
+	jar cmf dep/MANIFEST-AT.MF appleturnover.jar -C bin com/kreative/applefile
+	chmod +x appleturnover.jar
 
 iconposeur.jar: bin
 	export COPYFILE_DISABLE=true
@@ -86,15 +92,19 @@ iconposeur.dmg: Icon\ Poseur.app
 	hdiutil create -fs HFS+ -volname "Icon Poseur" -srcfolder dmgtmp iconposeur.dmg
 	rm -rf dmgtmp
 
-install: iconposeur.jar
+install: appleturnover.jar iconposeur.jar
 	sudo mkdir -p /usr/local/lib/
 	sudo cp -f dep/jai-imageio-core.jar /usr/local/lib/jai-imageio-core.jar
 	sudo cp -f dep/jai-imageio-jpeg2000.jar /usr/local/lib/jai-imageio-jpeg2000.jar
 	sudo cp -f dep/ual.jar /usr/local/lib/ual.jar
+	sudo cp -f appleturnover.jar /usr/local/lib/appleturnover.jar
 	sudo cp -f iconposeur.jar /usr/local/lib/iconposeur.jar
+	sudo chmod -f 644 /usr/local/lib/appleturnover.jar
 	sudo chmod -f 644 /usr/local/lib/iconposeur.jar
 	sudo mkdir -p /usr/local/bin/
+	sudo cp -f dep/appleturnover /usr/local/bin/appleturnover
 	sudo cp -f dep/iconposeur /usr/local/bin/iconposeur
+	sudo chmod -f 755 /usr/local/bin/appleturnover
 	sudo chmod -f 755 /usr/local/bin/iconposeur
 	sudo mkdir -p /usr/share/icons/hicolor/128x128/apps/
 	sudo cp -f dep/iconposeur.png /usr/share/icons/hicolor/128x128/apps/iconposeur.png
