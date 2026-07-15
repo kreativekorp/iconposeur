@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import com.kreative.applefile.MacResourceFile;
 
 public class Main {
 	public static void main(String[] args) {
@@ -88,41 +87,51 @@ public class Main {
 				f.setVisible(true);
 				return f;
 			} else {
-				MacResourceFile res = IcnsExtract.getResourceFile(file);
-				if (res != null) {
-					Map<Integer,Object> icons = IcnsExtract.getIconSuiteData(res);
-					if (icons != null && !icons.isEmpty()) {
-						if (icons.size() == 1) {
-							for (Object o : icons.values()) {
-								if (o instanceof MacIconSuite) {
-									IcnsFrame f = new IcnsFrame((MacIconSuite)o);
-									f.setVisible(true);
-									return f;
-								}
-								if (o instanceof byte[]) {
-									IcnsFrame f = new IcnsFrame((byte[])o);
-									f.setVisible(true);
-									return f;
-								}
-							}
-						} else {
-							IcnsListFrame f = new IcnsListFrame(file.getName(), icons);
-							f.setVisible(true);
-							return f;
-						}
-					}
-				}
+				Map<?,?> icons = IcnsExtract.getIconSuiteData(file);
+				if (icons != null) return openIcons(file.getName(), icons);
 				IcnsFrame f = new IcnsFrame(file);
 				f.setVisible(true);
 				return f;
 			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(
-				null, "An error occurred while opening this file.",
+				null, "This file could not be recognized as a valid icon file.",
 				"Open", JOptionPane.ERROR_MESSAGE
 			);
 			return null;
 		}
+	}
+	
+	public static JFrame openIcons(String name, Map<?,?> icons) {
+		if (icons == null || icons.isEmpty()) {
+			JOptionPane.showMessageDialog(
+				null, "Could not open this file because it contains no icons.",
+				"Open", JOptionPane.ERROR_MESSAGE
+			);
+			return null;
+		}
+		if (icons.size() > 1) {
+			IcnsListFrame f = new IcnsListFrame(name, icons);
+			f.setVisible(true);
+			return f;
+		}
+		for (Object o : icons.values()) {
+			if (o instanceof MacIconSuite) {
+				IcnsFrame f = new IcnsFrame((MacIconSuite)o);
+				f.setVisible(true);
+				return f;
+			}
+			if (o instanceof byte[]) try {
+				IcnsFrame f = new IcnsFrame((byte[])o);
+				f.setVisible(true);
+				return f;
+			} catch (IOException e) {}
+		}
+		JOptionPane.showMessageDialog(
+			null, "Could not open this file because it contains no icons.",
+			"Open", JOptionPane.ERROR_MESSAGE
+		);
+		return null;
 	}
 	
 	private static String lastSaveDirectory = null;

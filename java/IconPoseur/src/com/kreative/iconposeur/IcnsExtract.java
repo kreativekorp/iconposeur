@@ -88,23 +88,18 @@ public class IcnsExtract {
 	
 	private static void process(File src, String format, File dstDir, String dstName) {
 		System.out.println(src.getName());
-		MacResourceFile rsrc = getResourceFile(src);
-		if (rsrc == null) {
-			System.out.println("\tNo resources found.");
-			return;
-		}
-		Map<Integer,Object> icons = getIconSuiteData(rsrc);
-		if (icons.isEmpty()) {
+		Map<?,?> icons = getIconSuiteData(src);
+		if (icons == null || icons.isEmpty()) {
 			System.out.println("\tNo icons found.");
 			return;
 		}
-		for (Map.Entry<Integer,Object> e : icons.entrySet()) {
+		for (Map.Entry<?,?> e : icons.entrySet()) {
 			System.out.print('\t');
 			System.out.print(e.getKey());
 			System.out.print('\t');
 			try {
 				String filename;
-				if (e.getKey().intValue() == -16455) {
+				if (e.getKey().equals("") || e.getKey().equals(-16455)) {
 					filename = dstName.replaceAll("(.)[$]ID[$]\\1|[$]ID[$]", "$1");
 				} else {
 					filename = dstName.replace("$ID$", e.getKey().toString());
@@ -154,7 +149,17 @@ public class IcnsExtract {
 		MacIconSuite.ict$,MacIconSuite.ict4,MacIconSuite.ict8,MacIconSuite.it32,MacIconSuite.t8mk
 	);
 	
-	public static Map<Integer,Object> getIconSuiteData(MacResourceFile rsrc) {
+	public static Map<?,?> getIconSuiteData(File file) {
+		// Try reading as Icon Archiver file
+		try { return new IconArchive(file).getIconMap(); }
+		catch (IOException e) {}
+		// Try reading as resource file
+		MacResourceFile rsrc = getResourceFile(file);
+		if (rsrc == null) return null;
+		return getIconSuiteData(rsrc);
+	}
+	
+	private static Map<Integer,Object> getIconSuiteData(MacResourceFile rsrc) {
 		Map<Integer,byte[]> completeSuites = new HashMap<Integer,byte[]>();
 		Map<Integer,MacIconSuite> partialSuites = new HashMap<Integer,MacIconSuite>();
 		for (MacResourceType rt : rsrc.getResourceTypes()) {
@@ -179,7 +184,7 @@ public class IcnsExtract {
 		return allSuites;
 	}
 	
-	public static MacResourceFile getResourceFile(File file) {
+	private static MacResourceFile getResourceFile(File file) {
 		if (file.isDirectory()) {
 			// Custom icons for folders are kept in an Icon\r file.
 			File icon = new File(file, "Icon\r");

@@ -116,6 +116,8 @@ public class IcnsListFrame extends JFrame {
 				label.setText(labels.get(i));
 				label.setHorizontalTextPosition(JLabel.CENTER);
 				label.setVerticalTextPosition(JLabel.BOTTOM);
+				label.setHorizontalAlignment(JLabel.CENTER);
+				label.setVerticalAlignment(JLabel.BOTTOM);
 				label.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 			}
 			return c;
