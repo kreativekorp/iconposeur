@@ -7,9 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import com.kreative.applefile.MacResourceFile;
 
 public class Main {
 	public static void main(String[] args) {
@@ -76,11 +78,40 @@ public class Main {
 		if (file == null) {
 			return openIcon();
 		} else try {
-			if (file.getName().toLowerCase().endsWith(".ico")) {
+			String lcname = file.getName().toLowerCase();
+			if (lcname.endsWith(".ico")) {
 				IcoFrame f = new IcoFrame(file);
 				f.setVisible(true);
 				return f;
+			} else if (lcname.endsWith(".icns")) {
+				IcnsFrame f = new IcnsFrame(file);
+				f.setVisible(true);
+				return f;
 			} else {
+				MacResourceFile res = IcnsExtract.getResourceFile(file);
+				if (res != null) {
+					Map<Integer,Object> icons = IcnsExtract.getIconSuiteData(res);
+					if (icons != null && !icons.isEmpty()) {
+						if (icons.size() == 1) {
+							for (Object o : icons.values()) {
+								if (o instanceof MacIconSuite) {
+									IcnsFrame f = new IcnsFrame((MacIconSuite)o);
+									f.setVisible(true);
+									return f;
+								}
+								if (o instanceof byte[]) {
+									IcnsFrame f = new IcnsFrame((byte[])o);
+									f.setVisible(true);
+									return f;
+								}
+							}
+						} else {
+							IcnsListFrame f = new IcnsListFrame(file.getName(), icons);
+							f.setVisible(true);
+							return f;
+						}
+					}
+				}
 				IcnsFrame f = new IcnsFrame(file);
 				f.setVisible(true);
 				return f;

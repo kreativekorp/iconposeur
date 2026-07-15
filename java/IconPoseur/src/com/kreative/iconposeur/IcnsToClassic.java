@@ -151,7 +151,7 @@ public class IcnsToClassic {
 		}
 	}
 	
-	private static AppleFile toAppleFile(MacIconSuite icns) {
+	public static AppleFile toAppleFile(MacIconSuite icns) {
 		MacResourceFile res = toResourceFile(icns);
 		AppleFile af = new AppleFile(false, true, "Icon Poseur");
 		af.setPartData(AppleFilePart.TYPE_FINDER_INFO, new byte[] {
@@ -175,7 +175,7 @@ public class IcnsToClassic {
 		return af;
 	}
 	
-	private static MacResourceFile toResourceFile(MacIconSuite icns) {
+	public static MacResourceFile toResourceFile(MacIconSuite icns) {
 		MacResourceFile res = new MacResourceFile();
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();

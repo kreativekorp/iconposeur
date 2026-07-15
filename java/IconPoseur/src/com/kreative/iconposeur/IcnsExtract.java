@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.imageio.ImageIO;
 import com.kreative.applefile.AppleFile;
 import com.kreative.applefile.AppleFilePart;
@@ -153,7 +154,7 @@ public class IcnsExtract {
 		MacIconSuite.ict$,MacIconSuite.ict4,MacIconSuite.ict8,MacIconSuite.it32,MacIconSuite.t8mk
 	);
 	
-	private static Map<Integer,Object> getIconSuiteData(MacResourceFile rsrc) {
+	public static Map<Integer,Object> getIconSuiteData(MacResourceFile rsrc) {
 		Map<Integer,byte[]> completeSuites = new HashMap<Integer,byte[]>();
 		Map<Integer,MacIconSuite> partialSuites = new HashMap<Integer,MacIconSuite>();
 		for (MacResourceType rt : rsrc.getResourceTypes()) {
@@ -172,13 +173,13 @@ public class IcnsExtract {
 				}
 			}
 		}
-		Map<Integer,Object> allSuites = new HashMap<Integer,Object>();
+		Map<Integer,Object> allSuites = new TreeMap<Integer,Object>();
 		allSuites.putAll(partialSuites);
 		allSuites.putAll(completeSuites);
 		return allSuites;
 	}
 	
-	private static MacResourceFile getResourceFile(File file) {
+	public static MacResourceFile getResourceFile(File file) {
 		if (file.isDirectory()) {
 			// Custom icons for folders are kept in an Icon\r file.
 			File icon = new File(file, "Icon\r");

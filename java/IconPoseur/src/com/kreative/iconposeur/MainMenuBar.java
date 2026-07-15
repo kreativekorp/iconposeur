@@ -26,10 +26,6 @@ public class MainMenuBar extends JMenuBar {
 		fileMenu.addSeparator();
 		fileMenu.add(new SaveMenuItem(si));
 		fileMenu.add(new SaveAsMenuItem(si));
-		if (!SwingUtils.IS_MAC_OS) {
-			fileMenu.addSeparator();
-			fileMenu.add(new ExitMenuItem());
-		}
 		add(fileMenu);
 		
 		JMenu editMenu = new JMenu("Edit");
@@ -40,7 +36,12 @@ public class MainMenuBar extends JMenuBar {
 		add(editMenu);
 		
 		for (JMenu menu : menus) {
-			if (menu.getText().equals("Edit")) {
+			if (menu.getText().equals("File")) {
+				fileMenu.addSeparator();
+				for (int i = 0, n = menu.getItemCount(); i < n; i++) {
+					fileMenu.add(menu.getItem(i));
+				}
+			} else if (menu.getText().equals("Edit")) {
 				editMenu.addSeparator();
 				for (int i = 0, n = menu.getItemCount(); i < n; i++) {
 					editMenu.add(menu.getItem(i));
@@ -48,6 +49,11 @@ public class MainMenuBar extends JMenuBar {
 			} else {
 				add(menu);
 			}
+		}
+		
+		if (!SwingUtils.IS_MAC_OS) {
+			fileMenu.addSeparator();
+			fileMenu.add(new ExitMenuItem());
 		}
 	}
 	

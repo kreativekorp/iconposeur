@@ -20,10 +20,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
+import com.kreative.applefile.Format;
 
 public class IcnsFrame extends JFrame implements SaveInterface {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +36,6 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 	private final JPanel retinaPanel;
 	private final JPanel classicPanel;
 	private final JPanel compressedPanel;
-	private final JMenu viewMenu;
 	private File file;
 	private boolean changed;
 	
@@ -45,7 +46,19 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 		this.retinaPanel = createRetinaPanel();
 		this.classicPanel = createClassicPanel();
 		this.compressedPanel = createCompressedPanel();
-		this.viewMenu = createViewMenu();
+		this.file = null;
+		this.changed = false;
+		build();
+	}
+	
+	public IcnsFrame(MacIconSuite icns) {
+		this.icns = new MacIconSuite();
+		this.icns.putAll(icns);
+		this.wells = new IconWellGroup();
+		this.standardPanel = createStandardPanel();
+		this.retinaPanel = createRetinaPanel();
+		this.classicPanel = createClassicPanel();
+		this.compressedPanel = createCompressedPanel();
 		this.file = null;
 		this.changed = false;
 		build();
@@ -61,7 +74,6 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 		this.retinaPanel = createRetinaPanel();
 		this.classicPanel = createClassicPanel();
 		this.compressedPanel = createCompressedPanel();
-		this.viewMenu = createViewMenu();
 		this.file = null;
 		this.changed = false;
 		build();
@@ -77,14 +89,15 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 		this.retinaPanel = createRetinaPanel();
 		this.classicPanel = createClassicPanel();
 		this.compressedPanel = createCompressedPanel();
-		this.viewMenu = createViewMenu();
 		this.file = file;
 		this.changed = false;
 		build();
 	}
 	
 	private void build() {
-		setJMenuBar(new MainMenuBar(this, this, viewMenu));
+		final JMenu fileMenu = createFileMenu();
+		final JMenu viewMenu = createViewMenu();
+		setJMenuBar(new MainMenuBar(this, this, fileMenu, viewMenu));
 		((ViewMenuItem)viewMenu.getItem(0)).actionPerformed(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -93,21 +106,76 @@ public class IcnsFrame extends JFrame implements SaveInterface {
 		addWindowListener(windowListener);
 	}
 	
+	private JMenu createFileMenu() {
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.add(new SaveForClassicMenuItem());
+		return fileMenu;
+	}
+	
 	private JMenu createViewMenu() {
 		JMenu viewMenu = new JMenu("View");
-		viewMenu.add(new ViewMenuItem("Standard", KeyEvent.VK_1, standardPanel));
-		viewMenu.add(new ViewMenuItem("Retina", KeyEvent.VK_2, retinaPanel));
-		viewMenu.add(new ViewMenuItem("Classic", KeyEvent.VK_3, classicPanel));
-		viewMenu.add(new ViewMenuItem("Compressed", KeyEvent.VK_4, compressedPanel));
+		viewMenu.add(new ViewMenuItem("Standard", KeyEvent.VK_1, viewMenu, standardPanel));
+		viewMenu.add(new ViewMenuItem("Retina", KeyEvent.VK_2, viewMenu, retinaPanel));
+		viewMenu.add(new ViewMenuItem("Classic", KeyEvent.VK_3, viewMenu, classicPanel));
+		viewMenu.add(new ViewMenuItem("Compressed", KeyEvent.VK_4, viewMenu, compressedPanel));
 		return viewMenu;
+	}
+	
+	private class SaveForClassicMenuItem extends JMenuItem implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private SaveForClassicMenuItem() {
+			super("Save for Classic...");
+			setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, SwingUtils.SHORTCUT_KEY | KeyEvent.ALT_MASK));
+			this.addActionListener(this);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Format format = new FormatSelectDialog(
+				IcnsFrame.this,
+				"Save for Classic",
+				"Select a transfer format for your Mac OS Classic icon:",
+				"Cancel", "Save..."
+			).showDialog();
+			if (format == null) return;
+			
+			String suffix;
+			switch (format) {
+				case DATA_FORK: suffix = ".data"; break;
+				case RESOURCE_FORK: suffix = ".rsrc"; break;
+				case BINHEX: suffix = ".hqx"; break;
+				case MACBINARY: suffix = ".bin"; break;
+				default: suffix = ""; break;
+			}
+			File file = Main.getSaveFile(IcnsFrame.this, suffix);
+			if (file == null) return;
+			
+			MacIconSuite icns = new MacIconSuite();
+			icns.putAll(IcnsFrame.this.icns);
+			// Mac OS Classic requires at least an ICN# resource to recognize an icon.
+			// Mac OS X does not, so many .icns files do not contain one.
+			if (!icns.containsKey(MacIconSuite.ICN$)) {
+				icns.putImage(MacIconSuite.ICN$, icns.getImage());
+			}
+			
+			try {
+				format.write(file, IcnsToClassic.toAppleFile(icns));
+			} catch (IOException ex) {
+				JOptionPane.showMessageDialog(
+					this, "An error occurred while saving this file.",
+					"Save for Classic", JOptionPane.ERROR_MESSAGE
+				);
+			}
+		}
 	}
 	
 	private class ViewMenuItem extends JRadioButtonMenuItem implements ActionListener {
 		private static final long serialVersionUID = 1L;
+		private final JMenu viewMenu;
 		private final JPanel panel;
-		private ViewMenuItem(String name, int key, JPanel panel) {
+		private ViewMenuItem(String name, int key, JMenu viewMenu, JPanel panel) {
 			super(name);
 			this.setAccelerator(KeyStroke.getKeyStroke(key, SwingUtils.SHORTCUT_KEY));
+			this.viewMenu = viewMenu;
 			this.panel = panel;
 			this.addActionListener(this);
 		}
