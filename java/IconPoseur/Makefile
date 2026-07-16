@@ -2,9 +2,9 @@ SRCFILES := $(shell find src -name \*.java)
 RESFILES := $(shell find src -type f \! -name .\* \! -name \*.java | sed s/^src\\///)
 PACKAGES := $(shell find src -name \*.java | sed -E s/^src\\/\|\\/[^\\/]+$$//g | grep -v \\.java$$ | sort | uniq | tr / .)
 
-all: clean bin doc appleturnover.jar iconposeur.jar iconposeur.zip Icon\ Poseur.app
+all: clean bin doc appleturnover.jar iconposeur.jar iconposeur.zip iconposeur-macosx.zip
 
-eclipseall: eclipseclean appleturnover.jar iconposeur.jar iconposeur.zip Icon\ Poseur.app
+eclipseall: eclipseclean appleturnover.jar iconposeur.jar iconposeur.zip iconposeur-macosx.zip
 
 clean:
 	rm -rf bin
@@ -84,6 +84,9 @@ Icon\ Poseur-MacOS11.0.app: dep iconposeur.jar
 	cp -f dep/iconposeur.icns Icon\ Poseur-MacOS11.0.app/Contents/Resources
 	cp -f dep/*.jar Icon\ Poseur-MacOS11.0.app/Contents/Resources/Java
 	cp -f iconposeur.jar Icon\ Poseur-MacOS11.0.app/Contents/Resources/Java
+
+iconposeur-macosx.zip: Icon\ Poseur.app
+	zip -r iconposeur-macosx.zip Icon\ Poseur*.app
 
 iconposeur.dmg: Icon\ Poseur.app
 	rm -rf dmgtmp
