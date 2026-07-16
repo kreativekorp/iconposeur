@@ -15,3 +15,7 @@ Multiple views allow access to all sizes and color depths of icons, including re
 For 8-bit Windows icons, the color table is user-selectable. Color tables can be loaded from or saved to ACT or BMP files.
 
 ![](wiki/colors.png)
+
+**Version 1.1** of Icon Poseur can import icons from Icon Archiver files and Mac OS Classic files natively under Mac OS X or encoded using AppleSingle, AppleDouble, BinHex, MacBinary, Basilisk II/SheepShaver, or PC/File Exchange transfer formats.
+
+![](wiki/classic.png)
